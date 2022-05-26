@@ -1,5 +1,17 @@
 
 
+const start_botton = document.querySelector("#start_button");
+const grid = document.querySelector('#container');
+const round_display = document.querySelector('#round');
+const score_display = document.querySelector('#score');
+const status_bar = document.querySelector('#game_status');
+const completion_status = document.querySelector('#completion_status');
+
+status_bar.removeChild(round_display);
+status_bar.removeChild(score_display);
+status_bar.removeChild(completion_status);
+
+
 var tiles_seq = []; //tile_sq[tile] = pos
 var tiles_pos = []; //tiles_pos[pos] = tile
 
@@ -12,19 +24,25 @@ function sleep(ms)
 async function start()
 {
     window.alert('Game started...');
-   
+
+    
     //initialize the page for new game
     var score = 0;
-    const grid = document.querySelector('#container');
-    const round_display = document.querySelector('#round');
-    const score_display = document.querySelector('#score');
+    
     tiles_seq = [];
     tiles_pos = [];
     
+    status_bar.removeChild(start_botton);
+    try{
+       status_bar.removeChild(completion_status);
+    }
+    catch{}
+
     grid.innerHTML = "";
-    round_display.innerText = "Round 1";
-    score_display.innerText = "";
-    
+    round_display.innerText = "Round 1"
+    status_bar.appendChild(round_display);
+    status_bar.appendChild(completion_status);
+
     //create tiles using dom 
     for(let tile_id = 1;tile_id <= 16;tile_id++)
     {
@@ -86,9 +104,10 @@ async function start()
         for(let pos = 1;pos <= round;pos++)
         {       
             let tile = document.querySelector('#tile' + tiles_pos[pos]);
+            let prev_style = tile.style;
             tile.style.backgroundColor = "yellow";
             await sleep(600);
-            tile.style.backgroundColor = "white";
+            tile.style = prev_style;
         }
 
 
@@ -115,7 +134,8 @@ async function start()
     for(let round = 1;round <= 16;round++)
     {
         round_display.innerText = "Round: "+round;
-
+        completion_status.querySelector('span').style.width = ((round-1)/16)*100 + '%'; 
+        completion_status.querySelector('span').innerText = ((round-1)/16)*100 + '%';
         let result = await conduct_round(round);
 
         let won = result;
@@ -131,13 +151,17 @@ async function start()
         }
     }
     
-    round_display.innerText = "End";
-    score_display.innerText = "Score: "+ score; 
     window.alert("Game over! Score: " + score);
+
+
+    status_bar.removeChild(completion_status);
+    status_bar.removeChild(round_display);
+    score_display.innerText = "Score: "+ score; 
+    status_bar.appendChild(start_botton);
+    status_bar.appendChild(score_display);
     return;
 };
 
-const start_botton = document.querySelector("#start_button");
 start_botton.addEventListener('click',(event) => {
     start();
     return;
