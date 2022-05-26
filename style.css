@@ -4,6 +4,7 @@ body{
     margin: 0;
     background-image: url('https://media.istockphoto.com/photos/grand-piano-on-sunset-sky-background-picture-id1340663863?b=1&k=20&m=1340663863&s=170667a&w=0&h=QbH2xlvXE5uiUmw0_hZ8RMuNAH3ZqpV0Y-F304eqAzI=');
     background-size: cover;
+    background-position: center;
 }
 #game_title{
     box-sizing: border-box;
@@ -69,12 +70,22 @@ body{
     transform: scale(0.96);
 }
 @media screen and (max-width : 480px) {
+    body{
+        background-image: url('./res/small_bg.jpg');
+        background-size: cover;
+        background-position: center;
+    }
     #container{
         width:100vw;
         margin-left: 0;
     }
 }
 @media screen and (max-width : 1024) {
+    body{
+        background-image: url('./res/large_bg.jpg');
+        background-size: cover;
+        background-position: center;
+    }
     #container{
         width:90vw;
         margin-left: 5vw;
