@@ -33,12 +33,16 @@ const start_audio = new Audio();
 start_audio.src = "./res/start_music.mp3";
 const end_music = new Audio();
 end_music.src = "./res/end_music.mp3";
-function createTile(i)
+end_music.playbackRate = 9;
+tile_fall = new Audio('./res/tiles_fall.mp3');
+tile_fall.playbackRate = 3;
+async function createTile(i)
 {
    let tile = document.createElement('div');
    tile.classList.add('tile','tile' + i);   
    tile_icon = document.createElement('div');
-   tile_icon.innerHTML = '<img src = "./res/note'+ (1 + Math.floor(Math.random()*8))+'.png">  </img>';
+   tile_icon.innerHTML = '<img class = "tile_icon" src = "./res/note'+ (1 + Math.floor(Math.random()*8))+'.png">  </img>';
+   tile_icon.setAttribute('draggable','false');
    tile.appendChild(tile_icon);
    
    let tiles_audio;
@@ -56,10 +60,11 @@ function createTile(i)
                 tiles_audio = tiles_audio3;
                 break;
          }
+         
          tile.addEventListener('click',(event) => {
              tiles_audio.play();
              tiles_audio.currentTime = 0;
-             tiles_audio.playbackRate = 18;
+             tiles_audio.playbackRate = 6;
          });
          
          return tile;
@@ -70,7 +75,6 @@ async function start()
 {
     start_audio.play();
     window.alert('Game started...');
-
     
     //initialize the page for new game
     var score = 0;
@@ -85,18 +89,44 @@ async function start()
     catch{}
 
     grid.innerHTML = "";
-    round_display.innerText = "Round 1"
+    round_display.innerText = "1";
     status_bar.appendChild(round_display);
     status_bar.appendChild(completion_status);
 
     //create tiles using dom 
+    for(let id = 1;id <= 16;id++)
+    {
+        let tile_container = document.createElement('div');
+        tile_container.classList.add('tile_container');
+        tile_container.setAttribute('id','tile_container'+id);
+        grid.appendChild(tile_container);
+    }
+    await sleep(1000);
     for(let tile_id = 1;tile_id <= 16;tile_id++)
     {
-         let tile = createTile(1+ Math.floor(Math.random()*4));  
+         let tile = await createTile(1+ Math.floor(Math.random()*4));  
          tile.setAttribute('id','tile'+tile_id);          
-         grid.appendChild(tile);
+         document.querySelector('#tile_container'+tile_id).appendChild(tile);
+         tile.animate([
+            {
+                transform:'scale(0)',
+                top:'-'+(220 + (window.innerHeight*0.2*(Math.floor(tile_id/4))))+'px',
+
+            },
+            {
+                transform:'scale(1)',
+                top:'0px' 
+            }
+        ],{
+            duration:300,
+            easing:'ease-in'
+        });  
+        tile_fall.play();
+        tile_fall.currentTime = 0;
+        await sleep(300);
     }
    
+    await sleep(3000);
     //generrate random seq of tiles
     const length = 16;
     
@@ -132,15 +162,23 @@ async function start()
         let clicked_tiles_num = 0;
         grid.addEventListener('click',(event) => {
             let target = event.target;
-            if(target.classList.contains('tile'))
+            if(clicked_tiles_num < round)
             {
-               if(clicked_tiles_num < round)
-               {
-                let tile_id = parseInt(target.id.substring(4));
-                clicked_tiles.push(tile_id); 
-                clicked_tiles_num++;
-               }
-            
+                if(target.classList.contains('tile'))
+                {
+                
+                
+                    let tile_id = parseInt(target.id.substring(4));
+                    clicked_tiles.push(tile_id); 
+                    clicked_tiles_num++;
+                
+                }
+                else if(target.classList.contains('tile_icon'))
+                {
+                    let tile_id = parseInt(target.parentNode.parentNode.id.substring(4));
+                    clicked_tiles.push(tile_id);
+                    clicked_tiles_num++;
+                }
             }
         });
 
@@ -159,7 +197,7 @@ async function start()
         async function user_response()
         {
             
-            await sleep(round*1000+3000);
+            await sleep(6000);
             //check the status of the game
             for(let pos = 1;pos <= round;pos++)
             {
@@ -178,12 +216,13 @@ async function start()
 
     for(let round = 1;round <= 16;round++)
     {
-        round_display.innerText = "Round: "+round;
+        round_display.innerText = ""+round;
         completion_status.querySelector('span').style.width = ((round-1)/16)*100 + '%'; 
         completion_status.querySelector('span').innerText = ((round-1)/16)*100 + '%';
         let result = await conduct_round(round);
 
         let won = result;
+        var win = true;
         if(won == "true")
         {
            //next round
@@ -191,20 +230,28 @@ async function start()
         }
         else
         {
-           //edn the round    
+           //edn the round 
+           end_music.play();
+           window.alert("You lose! Score: " + score);
+           win = false;
            break;
         }
     }
     
-    window.alert("Game over! Score: " + score);
+    if(win)
+    {
+        window.alert('You win!');
+    }
 
     status_bar.removeChild(completion_status);
     status_bar.removeChild(round_display);
-    score_display.innerText = "Score: "+ score; 
+    score_display.innerText = "Score: "+ score;
+    start_botton.innerHTML = '<i class="fa-solid fa-arrow-rotate-right"></i>'; 
     status_bar.appendChild(start_botton);
     status_bar.appendChild(score_display);
     return;
 };
+
 
 start_botton.addEventListener('click',(event) => {
     start();
