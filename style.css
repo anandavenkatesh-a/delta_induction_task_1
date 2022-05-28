@@ -25,11 +25,10 @@ body{
     flex-wrap: wrap;
     justify-content: space-around;
     align-items: center;
-    background-image: linear-gradient(25deg,rgb(169, 143, 125),rgb(138, 100, 48));
+    background-color:transparent;
     color:white;
     font-weight: bolder;
     font-size: large;
-    border:2px solid white;
 }
 #start_button:hover{
    color: greenyellow;
@@ -63,8 +62,29 @@ body{
     margin-bottom: 20px;
 }
 #container > .tile{
-    background-color: rgb(225, 225, 223);
     opacity: 0.72;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#container > .tile img{
+    height: 30px;
+    width: 30px;
+    background-color: transparent;
+}
+#container > .tile1{
+    background-color: rgb(152, 189, 187);
+}
+#container > .tile2
+{
+    background-color: rgb(232, 166, 176);
+}
+#container > .tile3
+{
+    background-color: rgb(200, 252, 200);
+}#container > .tile4
+{
+    background-color: rgb(203, 203, 245);
 }
 #container > .tile:active{
     transform: scale(0.96);

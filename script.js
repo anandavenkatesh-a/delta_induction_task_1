@@ -21,8 +21,54 @@ function sleep(ms)
 }
 
 
+const tiles_audio1 = new Audio();
+tiles_audio1.src = './res/tile1.mp3';
+const tiles_audio2 = new Audio();
+tiles_audio2.src = "./res/tile2.mp3";
+const tiles_audio3 = new Audio();
+tiles_audio3.src = "./res/tile3.mp3";
+const tiles_audio4 = new Audio();
+tiles_audio4.src = "./res/tile4.mp3";
+const start_audio = new Audio();
+start_audio.src = "./res/start_music.mp3";
+const end_music = new Audio();
+end_music.src = "./res/end_music.mp3";
+function createTile(i)
+{
+   let tile = document.createElement('div');
+   tile.classList.add('tile','tile' + i);   
+   tile_icon = document.createElement('div');
+   tile_icon.innerHTML = '<img src = "./res/note'+ (1 + Math.floor(Math.random()*8))+'.png">  </img>';
+   tile.appendChild(tile_icon);
+   
+   let tiles_audio;
+         switch (i) {
+            case 1:
+               tiles_audio = tiles_audio4; 
+               break;
+            case 2:
+               tiles_audio = tiles_audio1; 
+               break;
+            case 3:
+                tiles_audio = tiles_audio2;
+                break;
+            case 4:
+                tiles_audio = tiles_audio3;
+                break;
+         }
+         tile.addEventListener('click',(event) => {
+             tiles_audio.play();
+             tiles_audio.currentTime = 0;
+             tiles_audio.playbackRate = 18;
+         });
+         
+         return tile;
+}
+
+
 async function start()
 {
+    start_audio.play();
     window.alert('Game started...');
 
     
@@ -46,10 +92,8 @@ async function start()
     //create tiles using dom 
     for(let tile_id = 1;tile_id <= 16;tile_id++)
     {
-         let tile = document.createElement('div');
-         tile.setAttribute('id','tile' + tile_id);
-         tile.setAttribute('class','tile');
-         tile.innerText = tile_id;
+         let tile = createTile(1+ Math.floor(Math.random()*4));  
+         tile.setAttribute('id','tile'+tile_id);          
          grid.appendChild(tile);
     }
    
@@ -88,7 +132,7 @@ async function start()
         let clicked_tiles_num = 0;
         grid.addEventListener('click',(event) => {
             let target = event.target;
-            if(target.className == 'tile')
+            if(target.classList.contains('tile'))
             {
                if(clicked_tiles_num < round)
                {
@@ -105,8 +149,9 @@ async function start()
         {       
             let tile = document.querySelector('#tile' + tiles_pos[pos]);
             let prev_style = tile.style;
-            tile.style.backgroundColor = "yellow";
-            await sleep(600);
+            tile.style.backgroundColor = 'yellow';
+            tile.style.opacity = '1';
+            await sleep(900);
             tile.style = prev_style;
         }
 
@@ -114,7 +159,7 @@ async function start()
         async function user_response()
         {
             
-            await sleep(6000);
+            await sleep(round*1000+3000);
             //check the status of the game
             for(let pos = 1;pos <= round;pos++)
             {
@@ -146,13 +191,12 @@ async function start()
         }
         else
         {
-           //edn the round           
+           //edn the round    
            break;
         }
     }
     
     window.alert("Game over! Score: " + score);
-
 
     status_bar.removeChild(completion_status);
     status_bar.removeChild(round_display);
