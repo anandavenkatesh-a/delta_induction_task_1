@@ -108,7 +108,6 @@ async function start()
     start_popups.style.width = '20vw';
     start_popups.style.top = '40vh';
     start_popups.style.minHeight = "144px";
-    start_popups.style.minWidth = '200px';
     start_popups_close = start_popups.querySelector('button');
     async function start_popup_close_user_response(){
         var user_responded = false;
@@ -127,7 +126,6 @@ async function start()
         start_popups.style.width = '0';
         start_popups.style.top = '0';
         start_popups.style.minHeight = "0px";
-        start_popups.style.minWidth = '0px';
         return 'done';
     };
     await start_popup_close_user_response();
@@ -317,7 +315,6 @@ async function start()
     end_popups.style.width ='20vw';
     end_popups.style.top = '40vh';
     end_popups.style.minHeight = '144px';
-    end_popups.style.minWidth = '200px';
     end_popups_close = end_popups.querySelector('button');
     async function end_popup_close_user_response(){
         var user_responded = false;
@@ -336,7 +333,6 @@ async function start()
         end_popups.style.width = '0';
         end_popups.style.top = '0';
         end_popups.style.minHeight = '0px';
-        end_popups.style.minWidth = '0px';
         end_popups.querySelector('.popups_title').innerText = '';
         end_popups.querySelector('.popups_content').innerHTML = '';
         return 'done';
