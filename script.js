@@ -6,11 +6,11 @@ const round_display = document.querySelector('#round');
 const score_display = document.querySelector('#score');
 const status_bar = document.querySelector('#game_status');
 const completion_status = document.querySelector('#completion_status');
-
+const start_popups = document.querySelector('#start_game');
+const end_popups = document.querySelector('#end_game');
 status_bar.removeChild(round_display);
 status_bar.removeChild(score_display);
 status_bar.removeChild(completion_status);
-
 
 var tiles_seq = []; //tile_sq[tile] = pos
 var tiles_pos = []; //tiles_pos[pos] = tile
@@ -33,10 +33,12 @@ const start_audio = new Audio();
 start_audio.src = "./res/start_music.mp3";
 const end_music = new Audio();
 end_music.src = "./res/end_music.mp3";
-end_music.playbackRate = 9;
+end_music.playbackRate = 3;
 tile_fall = new Audio('./res/tiles_fall.mp3');
 tile_fall.playbackRate = 3;
 async function createTile(i)
+
+
 {
    let tile = document.createElement('div');
    tile.classList.add('tile','tile' + i);   
@@ -70,12 +72,8 @@ async function createTile(i)
          return tile;
 }
 
-
 async function start()
 {
-    start_audio.play();
-    window.alert('Game started...');
-    
     //initialize the page for new game
     var score = 0;
     
@@ -90,6 +88,50 @@ async function start()
 
     grid.innerHTML = "";
     round_display.innerText = "1";
+    completion_status.querySelector('span').style.width = 0 + '%'; 
+    completion_status.querySelector('span').innerText = 0 + '%';
+    start_audio.play();
+    
+    start_popups.animate([
+        {
+           height:'0',
+           width:'0',
+           top:'0',
+        },
+        {
+           height:'20vh',
+           width:'20vw',
+           top:'40vh' 
+        }
+    ],300);
+    start_popups.style.height = '20vh';
+    start_popups.style.width = '20vw';
+    start_popups.style.top = '40vh';
+    start_popups.style.minHeight = "144px";
+    start_popups.style.minWidth = '200px';
+    start_popups_close = start_popups.querySelector('button');
+    async function start_popup_close_user_response(){
+        var user_responded = false;
+        start_popups_close.addEventListener('click',(event) => {
+            user_responded = true;
+        });  
+
+        while(!user_responded)
+        {
+            await sleep(100);
+        }
+
+        start_audio.pause();
+        start_audio.currentTime = 0;
+        start_popups.style.height = '0';
+        start_popups.style.width = '0';
+        start_popups.style.top = '0';
+        start_popups.style.minHeight = "0px";
+        start_popups.style.minWidth = '0px';
+        return 'done';
+    };
+    await start_popup_close_user_response();
+   
     status_bar.appendChild(round_display);
     status_bar.appendChild(completion_status);
 
@@ -126,7 +168,7 @@ async function start()
         await sleep(300);
     }
    
-    await sleep(3000);
+    await sleep(1000);
     //generrate random seq of tiles
     const length = 16;
     
@@ -189,7 +231,7 @@ async function start()
             let prev_style = tile.style;
             tile.style.backgroundColor = 'yellow';
             tile.style.opacity = '1';
-            await sleep(900);
+            await sleep(600);
             tile.style = prev_style;
         }
 
@@ -197,7 +239,7 @@ async function start()
         async function user_response()
         {
             
-            await sleep(6000);
+            await sleep(3000);
             //check the status of the game
             for(let pos = 1;pos <= round;pos++)
             {
@@ -214,7 +256,8 @@ async function start()
         return result;
     }
 
-    for(let round = 1;round <= 16;round++)
+    let round = 1;
+    for(;round <= 16;round++)
     {
         round_display.innerText = ""+round;
         completion_status.querySelector('span').style.width = ((round-1)/16)*100 + '%'; 
@@ -231,28 +274,81 @@ async function start()
         else
         {
            //edn the round 
-           end_music.play();
-           window.alert("You lose! Score: " + score);
-           win = false;
            break;
         }
     }
     
-    if(win)
+    grid.innerHTML = '';
+    
+    if(round == 17)
     {
-        window.alert('You win!');
+        completion_status.querySelector('span').innerText = 100 + '%';
+        completion_status.querySelector('span').style.width = 100 + '%'; 
+        await sleep(100);
+        end_popups.querySelector('.popups_title').innerText = "You Won";
     }
+    else
+    {
+        end_popups.querySelector('.popups_title').innerText = "You Lost";
+        const popups_round = document.createElement('li');
+        popups_round.innerText = 'Round:'+round;
+        end_popups.querySelector('.popups_content').appendChild(popups_round);
+    }
+    
+    const popups_score = document.createElement('li');
+    popups_score.innerText = 'Score:'+score;
+    end_popups.querySelector('.popups_content').appendChild(popups_score);
+    
+    end_music.play();
+    
+    end_popups.animate([
+        {
+            height:'0',
+            width:'0',
+            top:'0'
+        },
+        {
+            height:'20vh',
+            width:'20vw',
+            top:'40vh'
+        }
+    ],300);
+    end_popups.style.height = '20vh';
+    end_popups.style.width ='20vw';
+    end_popups.style.top = '40vh';
+    end_popups.style.minHeight = '144px';
+    end_popups.style.minWidth = '200px';
+    end_popups_close = end_popups.querySelector('button');
+    async function end_popup_close_user_response(){
+        var user_responded = false;
+        end_popups_close.addEventListener('click',(event) => {
+            user_responded = true;
+        });  
+
+        while(!user_responded)
+        {
+            await sleep(100);
+        }
+
+        end_music.pause();
+        end_music.currentTime = 0;
+        end_popups.style.height = '0';
+        end_popups.style.width = '0';
+        end_popups.style.top = '0';
+        end_popups.style.minHeight = '0px';
+        end_popups.style.minWidth = '0px';
+        end_popups.querySelector('.popups_title').innerText = '';
+        end_popups.querySelector('.popups_content').innerHTML = '';
+        return 'done';
+    };
+    await end_popup_close_user_response();
 
     status_bar.removeChild(completion_status);
     status_bar.removeChild(round_display);
-    score_display.innerText = "Score: "+ score;
     start_botton.innerHTML = '<i class="fa-solid fa-arrow-rotate-right"></i>'; 
     status_bar.appendChild(start_botton);
-    status_bar.appendChild(score_display);
     return;
 };
-
-
 start_botton.addEventListener('click',(event) => {
     start();
     return;

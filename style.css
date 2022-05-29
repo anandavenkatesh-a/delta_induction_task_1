@@ -70,7 +70,7 @@ body{
     border: 2px solid white;
     border-radius: 50%;
 
-    color: rgb(247, 248, 247);
+    color: rgb(237, 22, 230);
     font-weight: bolder;
 }
 #score{
@@ -147,11 +147,61 @@ body{
         margin-left: 5vw;
     }
 }
-/* .popups{
-    position: absolute;
+.popups{
+    position:fixed;
     overflow: hidden;
-    height: 30px;
-    width: 30px;
+    height: 0;
+    width: 0;
     top:0;
+    left:40vw;
     background-image: linear-gradient(75deg,rgb(137, 204, 200),rgb(223, 156, 220),rgb(137, 201, 137),rgb(122, 122, 206));
-} */
+    font-size:2rem;
+    color: white;
+    border:2px solid white;
+    border-top-right-radius: 1.2rem;
+}
+#start_game{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.close_popups{
+    position: absolute;
+    top:0;
+    right:0;
+    padding: 0;
+    height: fit-content;
+    width: fit-content;
+}
+.close_popups button{
+    padding:0;
+    margin: 0;
+    background-color: transparent;
+    border: 0 solid white;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+}
+.close_popups button i{
+    color: white;
+    font-size: 2rem;
+}
+#end_game{
+    text-align: center;
+}
+#end_game .popups_title{
+    font-size: 2rem;
+    font-weight:bolder;
+}
+#end_game .popups_content{
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items:flex-start;
+}
+#end_game .popups_content li{
+    display: inline-block;
+}
+
