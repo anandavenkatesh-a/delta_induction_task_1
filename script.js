@@ -26,9 +26,12 @@ const timer = document.getElementById('count_down');
 const context = timer.getContext('2d');
 document.body.removeChild(timer);
 var first = true;
+
 //info related to tiles
 var tiles_seq = []; //tile_sq[tile] = pos
 var tiles_pos = []; //tiles_pos[pos] = tile
+
+
 
 //sleep functionality 
 function sleep(ms) 
@@ -449,6 +452,7 @@ async function start()
     
     return;
 };
+
 start_botton.addEventListener('click',(event) => {
     start();
 });
