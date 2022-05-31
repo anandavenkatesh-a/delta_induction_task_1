@@ -84,7 +84,7 @@ body{
     margin-left: 10vw;
     margin-right: 10vw;
     height: 80vh;
-    grid-template-columns: repeat(4,1fr);
+    grid-template-columns: repeat(6,1fr);
     grid-gap:2px;
     gap: 2px;
     margin-bottom: 20px;

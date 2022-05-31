@@ -109,12 +109,9 @@ async function start()
     async function start_popup_close_user_response(){
         var user_responded = false;
         start_popups_close.addEventListener('click',(event) => {
-            console.log('Anand3');
             user_responded = true;
         });  
         
-        console.log('Anand1');
-
         while(!user_responded)
         {
             await sleep(100);
@@ -134,7 +131,7 @@ async function start()
     status_bar.appendChild(completion_status);
 
     //create tiles container in grid
-    for(let id = 1;id <= 16;id++)
+    for(let id = 1;id <= 36;id++)
     {
         let tile_container = document.createElement('div');
         tile_container.classList.add('tile_container');
@@ -145,7 +142,7 @@ async function start()
     await sleep(1000);
 
     //fill tiles in tiles container with animation
-    for(let tile_id = 1;tile_id <= 16;tile_id++)
+    for(let tile_id = 1;tile_id <= 36;tile_id++)
     {
          let tile = await createTile(1+ Math.floor(Math.random()*4));  
          tile.setAttribute('id','tile'+tile_id);          
@@ -161,17 +158,17 @@ async function start()
                 top:'0px' 
             }
         ],{
-            duration:300,
+            duration:60,
             easing:'ease-in'
         });  
         tile_fall.play();
         tile_fall.currentTime = 0;
-        await sleep(300);
+        await sleep(60);
     }
    
     await sleep(1000);
     
-    // //counduct rounds 
+    //counduct rounds 
     async function conduct_round(round)
     {        
         
@@ -179,7 +176,7 @@ async function start()
         tiles_pos = [];
         
         //choose random tiles
-        let length = round;
+        let length = 36;
         
         var pos_alloted_tiles = 0;
         while(pos_alloted_tiles < round)
@@ -192,9 +189,9 @@ async function start()
             }
         } 
 
-        for(let pos = 1;pos <= 16;pos++)
+        for(let pos = 1;pos <= round;pos++)
         {
-            for(let index = 0;index < 16;index++)
+            for(let index = 0;index < 36;index++)
             {
                 if(tiles_seq[index] == pos)
                 {
@@ -203,7 +200,9 @@ async function start()
                 }
             }
         }
-    
+        
+        console.log('round',round,": ",tiles_pos);
+
         //managing user clicks
         let clicked_tiles = [];
         let clicked_tiles_num = 0;
@@ -234,7 +233,7 @@ async function start()
             let prev_style = tile.style;
             tile.style.backgroundColor = 'yellow';
             tile.style.opacity = '1';
-            await sleep(600);
+            await sleep(900);
             tile.style = prev_style;
         }
 
@@ -244,6 +243,9 @@ async function start()
             
             await sleep(3000);
             //check the status of the game
+
+            console.log('round',round,": ",clicked_tiles);
+
             for(let pos = 1;pos <= round;pos++)
             {
                 if(clicked_tiles[pos-1] != (tiles_pos[pos]))
@@ -256,15 +258,16 @@ async function start()
         }
 
         const result = await user_response();    
+        await sleep(7000);
         return result;
     }
 
     let round = 1;
-    for(;round <= 16;round++)
+    for(;round <= 36;round++)
     {
         round_display.innerText = ""+round;
-        completion_status.querySelector('span').style.width = ((round-1)/16)*100 + '%'; 
-        completion_status.querySelector('span').innerText = ((round-1)/16)*100 + '%';
+        completion_status.querySelector('span').style.width = ((round-1)/36)*100 + '%'; 
+        completion_status.querySelector('span').innerText = Math.floor(((round-1)/36)*100) + '%';
         let result = await conduct_round(round);
 
         let won = result;
@@ -288,7 +291,7 @@ async function start()
 
     //show end game popups and start music
 
-    if(round == 17)
+    if(round == 37)
     {
         completion_status.querySelector('span').innerText = 100 + '%';
         completion_status.querySelector('span').style.width = 100 + '%'; 
