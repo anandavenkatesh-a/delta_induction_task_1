@@ -16,7 +16,9 @@ document.body.removeChild(start_popups);
 document.body.removeChild(end_popups);
 const vw = window.innerWidth;
 const vh = window.innerHeight;
-
+const timer = document.getElementById('count_down');
+const context = timer.getContext('2d');
+document.body.removeChild(timer);
 //info related to tiles
 var tiles_seq = []; //tile_sq[tile] = pos
 var tiles_pos = []; //tiles_pos[pos] = tile
@@ -202,7 +204,6 @@ async function start()
         }
         
         console.log('round',round,": ",tiles_pos);
-
         //managing user clicks
         let clicked_tiles = [];
         let clicked_tiles_num = 0;
@@ -226,6 +227,25 @@ async function start()
             }
         });
 
+        status_bar.appendChild(timer);
+        context.strokeStyle = '#06FD04';
+        context.lineWidth = 3;
+        context.fillStyle = '#06FD04';
+        context.font = '21px Sans-serif';
+
+        var remaining_time = round*600 + 3000;
+        var total_time = remaining_time;
+
+        function show_time()
+        {
+            context.clearRect(0,0,timer.width,timer.height);
+            context.beginPath();
+            context.arc(32,32,30,-90,-90 + 2*(remaining_time/total_time)*Math.PI,false);
+            context.stroke();             
+            context.fillText(Math.floor(remaining_time/1000),27,40);
+        }
+        
+        show_time();
         //for hightlighting tiles 
         for(let pos = 1;pos <= round;pos++)
         {       
@@ -233,7 +253,10 @@ async function start()
             let prev_style = tile.style;
             tile.style.backgroundColor = 'yellow';
             tile.style.opacity = '1';
-            await sleep(900);
+            await sleep(600);
+            
+            remaining_time = remaining_time - (600);
+            show_time();
             tile.style = prev_style;
         }
 
@@ -241,7 +264,15 @@ async function start()
         async function user_response()
         {
             
-            await sleep(3000);
+            while(remaining_time)
+            {
+                await sleep(100);
+                remaining_time = remaining_time - 100;
+                show_time();
+            }
+
+            show_time();
+
             //check the status of the game
 
             console.log('round',round,": ",clicked_tiles);
@@ -257,8 +288,8 @@ async function start()
             return Promise.resolve("true");
         }
 
-        const result = await user_response();    
-        await sleep(7000);
+        const result = await user_response();  
+        status_bar.removeChild(timer);  
         return result;
     }
 
