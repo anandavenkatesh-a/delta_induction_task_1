@@ -14,12 +14,11 @@
 <body>
     <canvas id = "count_down" height = "72px" width = "72px"></canvas>
     <div class = "popups" id = "start_game">
-        <div class = "close_popups">
-            <button>
-                <i class="fa-regular fa-circle-xmark"></i>
-            </button>
-        </div>
-        <div> Game Started </div>
+        <div class = "popups_content">
+          <span>Play as</span>    
+          <input type = "text" name = "user_name" required>
+          <button> START>>> </button>
+        </div>  
     </div>
     <div class = "popups" id = "end_game">
         <div class = "close_popups">
@@ -49,7 +48,12 @@
     <main id = "container">
        
     </main>
+    
+    <div id = "leader_board">
+      
+    </div>
 
+    <i id ="show-leaderboard" class="fa-solid fa-trophy"></i>
     <script src = "./script.js"></script>
 </body>
 </html>

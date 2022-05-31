@@ -9,16 +9,23 @@ const status_bar = document.querySelector('#game_status');
 const completion_status = document.querySelector('#completion_status');
 const start_popups = document.querySelector('#start_game');
 const end_popups = document.querySelector('#end_game');
+const leader_board = document.querySelector('#leader_board');
+const show_leaderboard_button = document.querySelector('#show-leaderboard');
 status_bar.removeChild(round_display);
 status_bar.removeChild(score_display);
 status_bar.removeChild(completion_status);
 document.body.removeChild(start_popups);
 document.body.removeChild(end_popups);
+document.body.removeChild(leader_board);
+document.body.removeChild(grid);
+document.body.removeChild(show_leaderboard_button);
+status_bar.appendChild(show_leaderboard_button);
 const vw = window.innerWidth;
 const vh = window.innerHeight;
 const timer = document.getElementById('count_down');
 const context = timer.getContext('2d');
 document.body.removeChild(timer);
+var first = true;
 //info related to tiles
 var tiles_seq = []; //tile_sq[tile] = pos
 var tiles_pos = []; //tiles_pos[pos] = tile
@@ -45,6 +52,7 @@ end_music.src = "./res/end_music.mp3";
 end_music.playbackRate = 3;
 tile_fall = new Audio('./res/tiles_fall.mp3');
 tile_fall.playbackRate = 3;
+
 
 async function createTile(i)
 {
@@ -79,10 +87,55 @@ async function createTile(i)
          
          return tile;
 }
+function show_leaderboard()
+{
+    leader_board.innerHTML = '';
+    document.body.appendChild(leader_board);
+    let leaderboard_title = document.createElement('div');
+    leaderboard_title.classList.add('leaderboard-title');
+    leader_board.appendChild(leaderboard_title);
+    leaderboard_title.innerHTML = '<span> LeaderBorad </span> <span> <i class="fa-solid fa-trophy"></i> </span>';
+    let leaderboard_data = Object.entries(localStorage).sort((p1,p2) => {
+        return p2[1] - p1[1];
+    });
+    for([pname,hscore] of leaderboard_data)
+    {
+        let player_name = document.createElement('div');
+        player_name.classList.add('player-name-container');
+        let player_hscore =document.createElement('div');
+        player_hscore.classList.add('player-hscore-container');
 
+        leader_board.appendChild(player_name);
+        leader_board.appendChild(player_hscore);
+        
+        player_name.innerHTML = `<span> ${pname} </span>`;
+        player_hscore.innerHTML = `<span> ${hscore} </span>`;
+    }
+    leader_board.style.gridTemplateRows = `repeat(${localStorage.length+1},40px)`;
+    
+    leader_board_spans = leader_board.querySelectorAll('div span');
+    for(span of leader_board_spans)
+    {
+        span.classList.add('leaderboard-inactive');
+        span.classList.add('leaderboard-active');
+    }
+}
+show_leaderboard_button.addEventListener('click',(event) => {
+    show_leaderboard();
+});
 async function start()
 {
+    //username
+    let user_name;
+    
     //initialize the page for new game
+    status_bar.removeChild(show_leaderboard_button);
+    try{
+      document.body.removeChild(leader_board);
+    }
+    catch{}  
+    document.body.appendChild(grid); 
+
     var score = 0;
     
     tiles_seq = [];
@@ -104,15 +157,18 @@ async function start()
     
     document.body.appendChild(start_popups);
     start_popups.classList.add('active_popups');
-    
-    //waiting till user respinse to start the game
-    start_popups_close = start_popups.querySelector('button');
+
+    //waiting till user resonse
+    start_popups_button = start_popups.querySelector('.popups_content button');
+    start_popups_content = start_popups.querySelector('.popups_content input');
+
     // console.log(start_popups_close);
-    async function start_popup_close_user_response(){
+    async function start_popup_user_response(){
         var user_responded = false;
-        start_popups_close.addEventListener('click',(event) => {
+        start_popups_button.addEventListener('click',(event) => {
+            user_name = start_popups_content.value;
             user_responded = true;
-        });  
+        }); 
         
         while(!user_responded)
         {
@@ -124,7 +180,7 @@ async function start()
         start_popups.classList.remove('active_popups');        
         return 'done';
     };
-    await start_popup_close_user_response();
+    await start_popup_user_response();
     
     document.body.removeChild(start_popups);
 
@@ -165,7 +221,7 @@ async function start()
         });  
         tile_fall.play();
         tile_fall.currentTime = 0;
-        await sleep(60);
+        await sleep(100);
     }
    
     await sleep(1000);
@@ -253,10 +309,12 @@ async function start()
             let prev_style = tile.style;
             tile.style.backgroundColor = 'yellow';
             tile.style.opacity = '1';
-            await sleep(600);
             
-            remaining_time = remaining_time - (600);
-            show_time();
+            for(let i = 1;i <= 6;i++){
+                await sleep(100);
+                remaining_time = remaining_time - (100);
+                show_time();
+            }    
             tile.style = prev_style;
         }
 
@@ -370,8 +428,25 @@ async function start()
     document.body.removeChild(end_popups);
 
     //getting ready for next game
+    document.body.removeChild(grid);
     start_botton.innerHTML = '<i class="fa-solid fa-arrow-rotate-right"></i>'; 
     status_bar.appendChild(start_botton);
+    status_bar.appendChild(show_leaderboard_button);
+
+    //store the score
+    if(localStorage.getItem(user_name))
+    {
+        if(score > localStorage.getItem(user_name))
+        {
+            localStorage.setItem(user_name,score);   
+        }
+    }
+    else
+    {
+        localStorage.setItem(user_name,score);
+    }
+
+    
     return;
 };
 start_botton.addEventListener('click',(event) => {
