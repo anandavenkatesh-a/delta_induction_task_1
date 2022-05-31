@@ -25,7 +25,7 @@ body{
 }
 #game_status{
     width: 100%;
-    height: 60px;
+    height: fit-content;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -35,6 +35,7 @@ body{
     color:white;
     font-weight: bolder;
     font-size: large;
+    overflow: hidden;
 }
 #start_button:active{
    color: rgb(217, 251, 165);
@@ -130,15 +131,23 @@ body{
     position:fixed;
     overflow: hidden;
     box-sizing: border-box;
-    height: 0;
-    width: 0;
-    top:0;
-    left:40vw;
+    height: 0vh;
+    width: 0vw;
+    top:0vh;
+    left:0vw;
     background-image: linear-gradient(75deg,rgb(137, 204, 200),rgb(223, 156, 220),rgb(137, 201, 137),rgb(122, 122, 206));
     font-size:2rem;
     color: white;
     border:2px solid white;
     border-top-right-radius: 1.2rem;
+}
+.active_popups{
+    transition:all 900ms;
+    height: 30vh;
+    width: 40vw;
+    top:40vh;
+    left:30vw;
+    overflow-y: scroll;
 }
 #start_game{
     display: flex;
@@ -188,6 +197,17 @@ body{
 #end_game .popups_content li{
     display: inline-block;
 }
+@media screen and (max-width : 1024) {
+    body{
+        background-image: url('./res/large_bg.jpg');
+        background-size: cover;
+        background-position: center;
+    }
+    #container{
+        width:90vw;
+        margin-left: 5vw;
+    }
+}
 @media screen and (max-width : 480px) {
     body{
         background-image: url('https://mfiles.alphacoders.com/696/thumb-1920-696343.jpg');
@@ -198,18 +218,22 @@ body{
         width:100vw;
         margin-left: 0;
     }
-    .popups{
-        font-size: 1rem;
+    .active_popups{
+        width:60vw;
+        left:20vw;
     }
 }
-@media screen and (max-width : 1024) {
-    body{
-        background-image: url('./res/large_bg.jpg');
-        background-size: cover;
-        background-position: center;
+@media screen and (max-width:200px){
+    #game_title img{
+        height: 100%;
+        width: 100%;
     }
-    #container{
-        width:90vw;
-        margin-left: 5vw;
+    #container > .tile_container .tile img{
+        height: 100%;
+        width: 100%;
+    }
+    .active_popups{
+        width:80vw;
+        left:10vw;
     }
 }

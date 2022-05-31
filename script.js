@@ -1,5 +1,6 @@
 
 
+//including elements that are required
 const start_botton = document.querySelector("#start_button");
 const grid = document.querySelector('#container');
 const round_display = document.querySelector('#round');
@@ -11,16 +12,22 @@ const end_popups = document.querySelector('#end_game');
 status_bar.removeChild(round_display);
 status_bar.removeChild(score_display);
 status_bar.removeChild(completion_status);
+document.body.removeChild(start_popups);
+document.body.removeChild(end_popups);
+const vw = window.innerWidth;
+const vh = window.innerHeight;
 
+//info related to tiles
 var tiles_seq = []; //tile_sq[tile] = pos
 var tiles_pos = []; //tiles_pos[pos] = tile
 
+//sleep functionality 
 function sleep(ms) 
 {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-
+//setting up the audio elements
 const tiles_audio1 = new Audio();
 tiles_audio1.src = './res/tile1.mp3';
 const tiles_audio2 = new Audio();
@@ -36,9 +43,8 @@ end_music.src = "./res/end_music.mp3";
 end_music.playbackRate = 3;
 tile_fall = new Audio('./res/tiles_fall.mp3');
 tile_fall.playbackRate = 3;
+
 async function createTile(i)
-
-
 {
    let tile = document.createElement('div');
    tile.classList.add('tile','tile' + i);   
@@ -90,30 +96,24 @@ async function start()
     round_display.innerText = "1";
     completion_status.querySelector('span').style.width = 0 + '%'; 
     completion_status.querySelector('span').innerText = 0 + '%';
+    
+    //start audio
     start_audio.play();
     
-    start_popups.animate([
-        {
-           height:'0',
-           width:'0',
-           top:'0',
-        },
-        {
-           height:'20vh',
-           width:'20vw',
-           top:'40vh' 
-        }
-    ],300);
-    start_popups.style.height = '20vh';
-    start_popups.style.width = '20vw';
-    start_popups.style.top = '40vh';
-    start_popups.style.minHeight = "144px";
+    document.body.appendChild(start_popups);
+    start_popups.classList.add('active_popups');
+    
+    //waiting till user respinse to start the game
     start_popups_close = start_popups.querySelector('button');
+    // console.log(start_popups_close);
     async function start_popup_close_user_response(){
         var user_responded = false;
         start_popups_close.addEventListener('click',(event) => {
+            console.log('Anand3');
             user_responded = true;
         });  
+        
+        console.log('Anand1');
 
         while(!user_responded)
         {
@@ -122,18 +122,18 @@ async function start()
 
         start_audio.pause();
         start_audio.currentTime = 0;
-        start_popups.style.height = '0';
-        start_popups.style.width = '0';
-        start_popups.style.top = '0';
-        start_popups.style.minHeight = "0px";
+        start_popups.classList.remove('active_popups');        
         return 'done';
     };
     await start_popup_close_user_response();
-   
+    
+    document.body.removeChild(start_popups);
+
+    //showing round display and completion status of the game
     status_bar.appendChild(round_display);
     status_bar.appendChild(completion_status);
 
-    //create tiles using dom 
+    //create tiles container in grid
     for(let id = 1;id <= 16;id++)
     {
         let tile_container = document.createElement('div');
@@ -141,7 +141,10 @@ async function start()
         tile_container.setAttribute('id','tile_container'+id);
         grid.appendChild(tile_container);
     }
+
     await sleep(1000);
+
+    //fill tiles in tiles container with animation
     for(let tile_id = 1;tile_id <= 16;tile_id++)
     {
          let tile = await createTile(1+ Math.floor(Math.random()*4));  
@@ -150,7 +153,7 @@ async function start()
          tile.animate([
             {
                 transform:'scale(0)',
-                top:'-'+(220 + (window.innerHeight*0.2*(Math.floor(tile_id/4))))+'px',
+                top:'-'+(grid.getBoundingClientRect().y + (window.innerHeight*0.2*(Math.floor(tile_id/4))))+'px',
 
             },
             {
@@ -167,36 +170,40 @@ async function start()
     }
    
     await sleep(1000);
-    //generrate random seq of tiles
-    const length = 16;
     
-    var pos_alloted_tiles = 0;
-    while(pos_alloted_tiles < 16)
-    {
-        let tile_index = Math.floor(Math.random()*length);
-        if(tiles_seq[tile_index] == undefined)
-        {
-            tiles_seq[tile_index] = pos_alloted_tiles+1;
-            pos_alloted_tiles++;
-        }
-    } 
-
-    for(let pos = 1;pos <= 16;pos++)
-    {
-        for(let index = 0;index < 16;index++)
-        {
-            if(tiles_seq[index] == pos)
-            {
-                tiles_pos[pos] = index+1;
-                break;
-            }
-        }
-    }
-
-    
-    //counduct rounds 
+    // //counduct rounds 
     async function conduct_round(round)
     {        
+        
+        tiles_seq = [];
+        tiles_pos = [];
+        
+        //choose random tiles
+        let length = round;
+        
+        var pos_alloted_tiles = 0;
+        while(pos_alloted_tiles < round)
+        {
+            let tile_index = Math.floor(Math.random()*length);
+            if(tiles_seq[tile_index] == undefined)
+            {
+                tiles_seq[tile_index] = pos_alloted_tiles+1;
+                pos_alloted_tiles++;
+            }
+        } 
+
+        for(let pos = 1;pos <= 16;pos++)
+        {
+            for(let index = 0;index < 16;index++)
+            {
+                if(tiles_seq[index] == pos)
+                {
+                    tiles_pos[pos] = index+1;
+                    break;
+                }
+            }
+        }
+    
         //managing user clicks
         let clicked_tiles = [];
         let clicked_tiles_num = 0;
@@ -206,8 +213,6 @@ async function start()
             {
                 if(target.classList.contains('tile'))
                 {
-                
-                
                     let tile_id = parseInt(target.id.substring(4));
                     clicked_tiles.push(tile_id); 
                     clicked_tiles_num++;
@@ -233,7 +238,7 @@ async function start()
             tile.style = prev_style;
         }
 
-
+        //checking the status of the round
         async function user_response()
         {
             
@@ -241,7 +246,7 @@ async function start()
             //check the status of the game
             for(let pos = 1;pos <= round;pos++)
             {
-                if(!clicked_tiles.includes(tiles_pos[pos]))
+                if(clicked_tiles[pos-1] != (tiles_pos[pos]))
                 {
                     return Promise.resolve("false");
                 }
@@ -276,8 +281,13 @@ async function start()
         }
     }
     
+    //removing tiles
     grid.innerHTML = '';
-    
+    status_bar.removeChild(completion_status);
+    status_bar.removeChild(round_display);
+
+    //show end game popups and start music
+
     if(round == 17)
     {
         completion_status.querySelector('span').innerText = 100 + '%';
@@ -297,24 +307,11 @@ async function start()
     popups_score.innerText = 'Score:'+score;
     end_popups.querySelector('.popups_content').appendChild(popups_score);
     
+    document.body.appendChild(end_popups);
+    end_popups.classList.add('active_popups');
     end_music.play();
     
-    end_popups.animate([
-        {
-            height:'0',
-            width:'0',
-            top:'0'
-        },
-        {
-            height:'20vh',
-            width:'20vw',
-            top:'40vh'
-        }
-    ],300);
-    end_popups.style.height = '20vh';
-    end_popups.style.width ='20vw';
-    end_popups.style.top = '40vh';
-    end_popups.style.minHeight = '144px';
+    //waiting till user response
     end_popups_close = end_popups.querySelector('button');
     async function end_popup_close_user_response(){
         var user_responded = false;
@@ -329,23 +326,20 @@ async function start()
 
         end_music.pause();
         end_music.currentTime = 0;
-        end_popups.style.height = '0';
-        end_popups.style.width = '0';
-        end_popups.style.top = '0';
-        end_popups.style.minHeight = '0px';
+        end_popups.classList.remove('active_popups');
         end_popups.querySelector('.popups_title').innerText = '';
         end_popups.querySelector('.popups_content').innerHTML = '';
         return 'done';
     };
     await end_popup_close_user_response();
+  
+    document.body.removeChild(end_popups);
 
-    status_bar.removeChild(completion_status);
-    status_bar.removeChild(round_display);
+    //getting ready for next game
     start_botton.innerHTML = '<i class="fa-solid fa-arrow-rotate-right"></i>'; 
     status_bar.appendChild(start_botton);
     return;
 };
 start_botton.addEventListener('click',(event) => {
     start();
-    return;
 });
