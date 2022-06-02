@@ -169,8 +169,11 @@ async function start()
     async function start_popup_user_response(){
         var user_responded = false;
         start_popups_button.addEventListener('click',(event) => {
-            user_name = start_popups_content.value;
-            user_responded = true;
+            if(start_popups_content.value != '')
+            {
+                user_name = start_popups_content.value;
+                user_responded = true;
+            }
         }); 
         
         while(!user_responded)
