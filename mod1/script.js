@@ -17,10 +17,10 @@ document.body.removeChild(end_popups);
 const vw = window.innerWidth;
 const vh = window.innerHeight;
 
+
 //info related to tiles
 var tiles_seq = []; //tile_sq[tile] = pos
 var tiles_pos = []; //tiles_pos[pos] = tile
-
 //sleep functionality 
 function sleep(ms) 
 {
@@ -28,22 +28,6 @@ function sleep(ms)
 }
 
 //setting up the audio elements
-const tiles_audio1 = new Audio();
-tiles_audio1.src = './res/tile1.mp3';
-const tiles_audio2 = new Audio();
-tiles_audio2.src = "./res/tile2.mp3";
-const tiles_audio3 = new Audio();
-tiles_audio3.src = "./res/tile3.mp3";
-const tiles_audio4 = new Audio();
-tiles_audio4.src = "./res/tile4.mp3";
-const start_audio = new Audio();
-start_audio.src = "./res/start_music.mp3";
-const end_music = new Audio();
-end_music.src = "./res/end_music.mp3";
-end_music.playbackRate = 3;
-tile_fall = new Audio('./res/tiles_fall.mp3');
-tile_fall.playbackRate = 3;
-
 async function createTile(i)
 {
    let tile = document.createElement('div');
@@ -52,30 +36,7 @@ async function createTile(i)
    tile_icon.innerHTML = '<img class = "tile_icon" src = "./res/note'+ (1 + Math.floor(Math.random()*8))+'.png">  </img>';
    tile_icon.setAttribute('draggable','false');
    tile.appendChild(tile_icon);
-   
-   let tiles_audio;
-         switch (i) {
-            case 1:
-               tiles_audio = tiles_audio4; 
-               break;
-            case 2:
-               tiles_audio = tiles_audio1; 
-               break;
-            case 3:
-                tiles_audio = tiles_audio2;
-                break;
-            case 4:
-                tiles_audio = tiles_audio3;
-                break;
-         }
-         
-         tile.addEventListener('click',(event) => {
-             tiles_audio.play();
-             tiles_audio.currentTime = 0;
-             tiles_audio.playbackRate = 6;
-         });
-         
-         return tile;
+   return tile;
 }
 
 async function start()
@@ -98,7 +59,6 @@ async function start()
     completion_status.querySelector('span').innerText = 0 + '%';
     
     //start audio
-    start_audio.play();
     
     document.body.appendChild(start_popups);
     start_popups.classList.add('active_popups');
@@ -109,19 +69,15 @@ async function start()
     async function start_popup_close_user_response(){
         var user_responded = false;
         start_popups_close.addEventListener('click',(event) => {
-            console.log('Anand3');
             user_responded = true;
         });  
         
-        console.log('Anand1');
 
         while(!user_responded)
         {
             await sleep(100);
         }
 
-        start_audio.pause();
-        start_audio.currentTime = 0;
         start_popups.classList.remove('active_popups');        
         return 'done';
     };
@@ -150,27 +106,10 @@ async function start()
          let tile = await createTile(1+ Math.floor(Math.random()*4));  
          tile.setAttribute('id','tile'+tile_id);          
          document.querySelector('#tile_container'+tile_id).appendChild(tile);
-         tile.animate([
-            {
-                transform:'scale(0)',
-                top:'-'+(grid.getBoundingClientRect().y + (window.innerHeight*0.2*(Math.floor(tile_id/4))))+'px',
-
-            },
-            {
-                transform:'scale(1)',
-                top:'0px' 
-            }
-        ],{
-            duration:300,
-            easing:'ease-in'
-        });  
-        tile_fall.play();
-        tile_fall.currentTime = 0;
-        await sleep(300);
     }
    
     await sleep(1000);
-    
+
     // //counduct rounds 
     async function conduct_round(round)
     {        
@@ -309,7 +248,6 @@ async function start()
     
     document.body.appendChild(end_popups);
     end_popups.classList.add('active_popups');
-    end_music.play();
     
     //waiting till user response
     end_popups_close = end_popups.querySelector('button');
@@ -324,8 +262,6 @@ async function start()
             await sleep(100);
         }
 
-        end_music.pause();
-        end_music.currentTime = 0;
         end_popups.classList.remove('active_popups');
         end_popups.querySelector('.popups_title').innerText = '';
         end_popups.querySelector('.popups_content').innerHTML = '';

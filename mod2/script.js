@@ -211,23 +211,6 @@ async function start()
          let tile = await createTile(1+ Math.floor(Math.random()*4));  
          tile.setAttribute('id','tile'+tile_id);          
          document.querySelector('#tile_container'+tile_id).appendChild(tile);
-         tile.animate([
-            {
-                transform:'scale(0)',
-                top:'-'+(grid.getBoundingClientRect().y + (window.innerHeight*0.2*(Math.floor(tile_id/4))))+'px',
-
-            },
-            {
-                transform:'scale(1)',
-                top:'0px' 
-            }
-        ],{
-            duration:60,
-            easing:'ease-in'
-        });  
-        tile_fall.play();
-        tile_fall.currentTime = 0;
-        await sleep(100);
     }
    
     await sleep(1000);
