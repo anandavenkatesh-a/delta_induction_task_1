@@ -1,0 +1,54 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="./res/favicon.ico">
+    <title>Tiles Game</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://kit.fontawesome.com/62ef345795.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class = "popups" id = "start_game">
+        <div class = "close_popups">
+            <button>
+                <i class="fa-regular fa-circle-xmark"></i>
+            </button>
+        </div>
+        <div> Game Started </div>
+    </div>
+    <div class = "popups" id = "end_game">
+        <div class = "close_popups">
+            <button>
+                <i class="fa-regular fa-circle-xmark"></i>
+            </button>
+        </div>
+
+        <div class = "popups_title"></div>
+        <ul class = "popups_content">
+            
+        </ul>
+    </div>
+    <div class = "popups" id = "lose_game"></div>
+    <div class = "popups" id = "win_game"></div>
+    <header>
+        <h1 id = "game_title"><img src="./res/title.png"></h1>
+
+        <div id = "game_status">
+            <span id = "start_button"><i class="fa-regular fa-circle-play"></i></span>
+            <span id = "round"></span>
+            <span id = "completion_status"> <span></span> </span>
+            <span id = "score"></span>
+        </div>
+    </header>
+    
+    <main id = "container">
+       
+    </main>
+
+    <script src = "./script.js"></script>
+</body>
+</html>
