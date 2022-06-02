@@ -1,303 +1,58 @@
-
-
 body{
-    margin: 0;
-    background-image: url('https://media.istockphoto.com/photos/grand-piano-on-sunset-sky-background-picture-id1340663863?b=1&k=20&m=1340663863&s=170667a&w=0&h=QbH2xlvXE5uiUmw0_hZ8RMuNAH3ZqpV0Y-F304eqAzI=');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    background-image: linear-gradient(35deg, rgb(137, 204, 200), rgb(223, 156, 220), rgb(137, 201, 137), rgb(122, 122, 206));
     min-height: 100vh;
-    height: fit-content;
-    width: 100vw;
-    overflow: scroll;
+    margin:0;
 }
-#game_title{
-    box-sizing: border-box;
-    width: 100%;
-    height: 120px;
-    text-align: center;
-    background-image: linear-gradient(35deg,rgb(137, 204, 200),rgb(223, 156, 220),rgb(137, 201, 137),rgb(122, 122, 206));
-    color:white;
-    margin-top: 0;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-#game_title img{
-    height: 90%;
-    width: 390px;
-}
-#game_status{
-    width: 100%;
-    height: fit-content;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-items: center;
-    background-color:transparent;
-    color:white;
-    font-weight: bolder;
-    font-size: large;
-    overflow: hidden;
-}
-#start_button:active{
-   color: rgb(217, 251, 165);
-}
-#start_button i{
-   font-size:3.6rem;
-}
-#completion_status{
-    display: inline-block;
-    border:2px solid white;
-    border-radius: 2rem;
-    width: 300px;
-    height:2rem;
-}
-#completion_status span{
-    display: inline-block;
-    box-sizing: border-box;
-    background-color: rgb(94, 239, 137);
-    border:0px solid white ;
-    border-radius: 2rem;
-    height: 100%;
-    color:white;
-    text-align: center;
-    padding-top: 0.5rem;
-}
-#round{
-    height: 60px;
-    width: 60px;
-    box-sizing: border-box;
-    text-align: center;
-    padding-top: 1.1rem;
-
-    border: 2px solid white;
-    border-radius: 50%;
-
-    color: rgb(237, 22, 230);
-    font-weight: bolder;
-}
-#score{
-    font-size: 2rem;
-}
-#container{
-    margin-top: 20px;
-    display: grid;
-    width: 80vw;
+header{
+    height:20vh;
+    width:80vw;
     margin-left: 10vw;
-    margin-right: 10vw;
-    height: 80vh;
-    grid-template-columns: repeat(6,1fr);
-    grid-gap:2px;
-    gap: 2px;
-    margin-bottom: 20px;
+    border: 0px solid white;
+    border-radius: 2rem;
+    background-image: linear-gradient(to right top,rgba(255,255,255,0.7),rgba(255,255,255,0.3));
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-#leader_board{
-    margin-top: 20px;
-    margin-bottom: 20px;
-    margin-left: 10vw;
-    margin-right: 10vw;
-        
-    height: 80vh;
-    width: 80vw;
-            
+#game-title{
+   height: fit-content;
+   width: fit-content;
+   color:rgb(251, 5, 206);
+   font-style: italic;
+   font-family: 'Dancing Script', cursive;
+   font-size: 3.6rem;
+}
+nav{
+    height:60vh;
+    width:60vw;
+    margin-left: 20vw;
+    margin-top: 30px;
+    
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    row-gap: 2px;
+    grid-template-columns: 1fr;
+    gap: 9px;
 }
-.leaderboard-inactive{
-    display: inline-block;
-    height: 0;
-    overflow: hidden;
-}
-.leaderboard-active{
-    display: inline-block;
-    color: rgb(243, 13, 239);
-    font-size: larger;
-    height:fit-content;
-}
-#leader_board .leaderboard-title span i{
-    color: #bba10c;
-    font-size: 2rem;
-}
-#show-leaderboard{
-    font-size: 3.6rem;
-}
-#container  > .tile_container  .tile{
-    opacity: 0.72;
+nav div{
+    border: 0px solid white;
+    border-radius: 2rem;
+    background-image: linear-gradient(to right top,rgba(255,255,255,0.7),rgba(255,255,255,0.3));
+    
     display: flex;
-    height:100%;
-    width: 100%;
-    justify-content: center;
     align-items: center;
-    position: relative;
-    overflow: hidden;
-    cursor: pointer;
-}
-#container > .tile_container .tile img{
-    height: 30px;
-    width: 30px;
-    background-color: transparent;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
-    user-select: none;
-}
-#container >.tile_container .tile1{
-    background-color: rgb(152, 189, 187);
-}
-#container >.tile_container .tile2
-{
-    background-color: rgb(239, 208, 238);
-}
-#container >.tile_container .tile3
-{
-    background-color: rgb(200, 252, 200);
-}#container >.tile_container .tile4
-{
-    background-color: rgb(203, 203, 245);
-}
-#container >.tile_container .tile:active{
-    transform: scale(0.96);
-}
-#leader_board > *{
-    display: flex;
     justify-content: center;
-    align-items: center;
-    border:2px solid white;
-    backdrop-filter: blur(10px);
 }
-#leader_board .leaderboard-title{
-    grid-column: span 2;
-    background-color: rgb(244, 219, 223);
+nav div a{
+    text-decoration: none;
+    color:rgb(224, 134, 213);
+    font-size: 3rem;
 }
-.popups{
-    position:fixed;
-    overflow: hidden;
-    box-sizing: border-box;
-    height: 0vh;
-    width: 0vw;
-    top:0vh;
-    left:0vw;
-    background-image: linear-gradient(75deg,rgb(137, 204, 200),rgb(223, 156, 220),rgb(137, 201, 137),rgb(122, 122, 206));
-    font-size:2rem;
-    color: white;
-    border:2px solid white;
-    border-top-right-radius: 1.2rem;
+nav div:hover{
+    transform: translateX(10px);
 }
-.active_popups{
-    transition:all 900ms;
-    height: 30vh;
-    width: 60vw;
-    top:40vh;
-    left:20vw;
-    overflow-y: scroll;
+#hacker-mode a{
+    color:rgb(137, 201, 137);
 }
-#start_game{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-#start_game button{
-    background-color: transparent;
-    padding:4px;
-    border:2px solid white;
-    font-size: 2rem;
-    color:white;
-}
-#start_game input{
-    background-color: transparent;
-    border:0px solid white;
-    border-bottom: 2px solid white;
-    color:rgb(255, 1, 195);
-    font-weight: 900;
-    font-size: 1.5rem;
-    width:100%;
-}
-.close_popups{
-    position: absolute;
-    top:0;
-    right:0;
-    padding: 0;
-    height: fit-content;
-    width: fit-content;
-}
-.close_popups button{
-    padding:0;
-    margin: 0;
-    background-color: transparent;
-    border: 0 solid white;
-    height: 100%;
-    width: 100%;
-    padding: 0;
-}
-.close_popups button:active{
-    color:rgb(118, 12, 12);
-}
-.close_popups button i{
-    color: white;
-    font-size: 2rem;
-}
-#end_game{
-    text-align: center;
-}
-#end_game .popups_title{
-    font-size: 2rem;
-    font-weight:bolder;
-    margin-top:1.5rem;
-}
-#end_game .popups_content{
-    list-style: none;
-    padding-left: 0;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-items:flex-start;
-}
-#end_game .popups_content li{
-    display: inline-block;
-}
-@media screen and (max-width : 1024) {
-    body{
-        background-image: url('./res/large_bg.jpg');
-        background-size: cover;
-        background-position: center;
-    }
-    #container{
-        width:90vw;
-        margin-left: 5vw;
-    }
-}
-@media screen and (max-width : 480px) {
-    body{
-        background-image: url('https://mfiles.alphacoders.com/696/thumb-1920-696343.jpg');
-        background-size: cover;
-        background-position: center;
-    }
-    #container{
-        width:100vw;
-        margin-left: 0;
-        margin-right: 0;
-    }
-    .active_popups{
-        width:60vw;
-        left:20vw;
-    }
-}
-@media screen and (max-width:200px){
-    #game_title img{
-        height: 100%;
-        width: 100%;
-    }
-    #container > .tile_container .tile img{
-        height: 100%;
-        width: 100%;
-    }
-    .active_popups{
-        width:80vw;
-        left:10vw;
-    }
+#hackerp-mode a{
+    color:rgb(137, 204, 200);
 }
