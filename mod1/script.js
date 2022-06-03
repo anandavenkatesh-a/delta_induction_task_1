@@ -17,17 +17,16 @@ document.body.removeChild(end_popups);
 const vw = window.innerWidth;
 const vh = window.innerHeight;
 
-
 //info related to tiles
 var tiles_seq = []; //tile_sq[tile] = pos
 var tiles_pos = []; //tiles_pos[pos] = tile
+
 //sleep functionality 
 function sleep(ms) 
 {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-//setting up the audio elements
 async function createTile(i)
 {
    let tile = document.createElement('div');
@@ -36,8 +35,9 @@ async function createTile(i)
    tile_icon.innerHTML = '<img class = "tile_icon" src = "./res/note'+ (1 + Math.floor(Math.random()*8))+'.png">  </img>';
    tile_icon.setAttribute('draggable','false');
    tile.appendChild(tile_icon);
-   return tile;
+         return tile;
 }
+
 
 async function start()
 {
@@ -58,8 +58,6 @@ async function start()
     completion_status.querySelector('span').style.width = 0 + '%'; 
     completion_status.querySelector('span').innerText = 0 + '%';
     
-    //start audio
-    
     document.body.appendChild(start_popups);
     start_popups.classList.add('active_popups');
     
@@ -69,9 +67,11 @@ async function start()
     async function start_popup_close_user_response(){
         var user_responded = false;
         start_popups_close.addEventListener('click',(event) => {
+            console.log('Anand3');
             user_responded = true;
         });  
         
+        console.log('Anand1');
 
         while(!user_responded)
         {
@@ -100,7 +100,7 @@ async function start()
 
     await sleep(1000);
 
-    //fill tiles in tiles container with animation
+    //fill the tiles
     for(let tile_id = 1;tile_id <= 16;tile_id++)
     {
          let tile = await createTile(1+ Math.floor(Math.random()*4));  
@@ -109,7 +109,7 @@ async function start()
     }
    
     await sleep(1000);
-
+    
     // //counduct rounds 
     async function conduct_round(round)
     {        
@@ -118,7 +118,7 @@ async function start()
         tiles_pos = [];
         
         //choose random tiles
-        let length = round;
+        let length = 16;
         
         var pos_alloted_tiles = 0;
         while(pos_alloted_tiles < round)
@@ -185,7 +185,7 @@ async function start()
             //check the status of the game
             for(let pos = 1;pos <= round;pos++)
             {
-                if(clicked_tiles[pos-1] != (tiles_pos[pos]))
+                if(!clicked_tiles.includes(tiles_pos[pos]))
                 {
                     return Promise.resolve("false");
                 }
@@ -276,6 +276,8 @@ async function start()
     status_bar.appendChild(start_botton);
     return;
 };
+
+
 start_botton.addEventListener('click',(event) => {
     start();
 });
