@@ -146,25 +146,17 @@ async function start()
         //managing user clicks
         let clicked_tiles = [];
         let clicked_tiles_num = 0;
-        grid.addEventListener('click',(event) => {
-            let target = event.target;
-            if(clicked_tiles_num < round)
-            {
-                if(target.classList.contains('tile'))
-                {
-                    let tile_id = parseInt(target.id.substring(4));
-                    clicked_tiles.push(tile_id); 
-                    clicked_tiles_num++;
-                
-                }
-                else if(target.classList.contains('tile_icon'))
-                {
-                    let tile_id = parseInt(target.parentNode.parentNode.id.substring(4));
-                    clicked_tiles.push(tile_id);
-                    clicked_tiles_num++;
-                }
-            }
-        });
+        let tiles = grid.querySelectorAll('.tile');
+        for(e of tiles)
+        {
+            let tile = e; 
+            tile.addEventListener('click',(event) => {
+                 let id = parseInt(tile.id.substr(4));
+                 console.log(id);
+                 clicked_tiles.push(id);
+                 clicked_tiles_num++;
+             })
+        }
 
         //for hightlighting tiles 
         for(let pos = 1;pos <= round;pos++)

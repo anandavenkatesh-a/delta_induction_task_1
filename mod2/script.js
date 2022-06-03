@@ -22,10 +22,10 @@ document.body.removeChild(show_leaderboard_button);
 status_bar.appendChild(show_leaderboard_button);
 const vw = window.innerWidth;
 const vh = window.innerHeight;
-const timer = document.getElementById('count_down');
-const context = timer.getContext('2d');
-document.body.removeChild(timer);
+const stopwatch = document.getElementById('count-down');
+document.body.removeChild(stopwatch);
 var first = true;
+
 
 //info related to tiles
 var tiles_seq = []; //tile_sq[tile] = pos
@@ -98,21 +98,41 @@ function show_leaderboard()
     leaderboard_title.classList.add('leaderboard-title');
     leader_board.appendChild(leaderboard_title);
     leaderboard_title.innerHTML = '<span> LeaderBorad </span> <span> <i class="fa-solid fa-trophy"></i> </span>';
-    let leaderboard_data = Object.entries(localStorage).sort((p1,p2) => {
-        return p2[1] - p1[1];
+    
+    let leaderboard_data = Object.entries(localStorage);
+    leaderboard_data.forEach((player) => {
+        player[1] = JSON.parse(player[1]);
     });
-    for([pname,hscore] of leaderboard_data)
+    console.log(leaderboard_data);
+
+    leaderboard_data.sort((p1,p2) => {
+        if(p1[1].score == p2[1].score)
+        {
+            return -p2[1].time + p1[1].time
+        }
+        else
+        {
+            return  -p1[1].score + p2[1].score;
+        }
+    });
+
+    for([pname,pdata] of leaderboard_data)
     {
         let player_name = document.createElement('div');
         player_name.classList.add('player-name-container');
         let player_hscore =document.createElement('div');
         player_hscore.classList.add('player-hscore-container');
+        let player_time =document.createElement('div');
+        player_time.classList.add('player-time-container');
 
         leader_board.appendChild(player_name);
         leader_board.appendChild(player_hscore);
-        
+        leader_board.appendChild(player_time);
+
         player_name.innerHTML = `<span> ${pname} </span>`;
-        player_hscore.innerHTML = `<span> ${hscore} </span>`;
+        player_hscore.innerHTML = `<span> ${pdata.score} </span>`;
+        player_time.innerHTML = `<span> ${pdata.time+'ms'} </span>`;
+
     }
     leader_board.style.gridTemplateRows = `repeat(${localStorage.length+1},40px)`;
     
@@ -130,7 +150,7 @@ async function start()
 {
     //username
     let user_name;
-    
+    let time = 0;
     //initialize the page for new game
     status_bar.removeChild(show_leaderboard_button);
     try{
@@ -149,7 +169,7 @@ async function start()
        status_bar.removeChild(completion_status);
     }
     catch{}
-
+    
     grid.innerHTML = "";
     round_display.innerText = "1";
     completion_status.querySelector('span').style.width = 0 + '%'; 
@@ -205,7 +225,7 @@ async function start()
 
     await sleep(1000);
 
-    //fill tiles in tiles container with animation
+    //fill tiles in tiles container 
     for(let tile_id = 1;tile_id <= 36;tile_id++)
     {
          let tile = await createTile(1+ Math.floor(Math.random()*4));  
@@ -219,6 +239,33 @@ async function start()
     async function conduct_round(round)
     {        
         
+        show_time();
+        //show time
+        function show_time(){
+            let time_in_sec = Math.floor(time/1000);
+            
+            let sec = time_in_sec%60;
+            let min = Math.floor(time_in_sec/60);
+            
+            let sec_1 = Math.floor(sec/10);
+            let sec_0 = sec%10;
+
+            let min_1 = Math.floor(min/10);
+            let min_0 = min%10;
+
+            let sec1 = document.getElementById('sec1');
+            let sec0 = document.getElementById('sec0');
+
+            let min1 = document.getElementById('min1');
+            let min0 = document.getElementById('min0');
+
+            sec1.innerText = sec_1;
+            sec0.innerText = sec_0;
+            min1.innerText = min_1;
+            min0.innerText = min_0;
+
+        }
+
         tiles_seq = [];
         tiles_pos = [];
         
@@ -248,49 +295,22 @@ async function start()
             }
         }
         
-        console.log('round',round,": ",tiles_pos);
         //managing user clicks
         let clicked_tiles = [];
         let clicked_tiles_num = 0;
-        grid.addEventListener('click',(event) => {
-            let target = event.target;
-            if(clicked_tiles_num < round)
-            {
-                if(target.classList.contains('tile'))
-                {
-                    let tile_id = parseInt(target.id.substring(4));
-                    clicked_tiles.push(tile_id); 
-                    clicked_tiles_num++;
-                
-                }
-                else if(target.classList.contains('tile_icon'))
-                {
-                    let tile_id = parseInt(target.parentNode.parentNode.id.substring(4));
-                    clicked_tiles.push(tile_id);
-                    clicked_tiles_num++;
-                }
-            }
-        });
-
-        status_bar.appendChild(timer);
-        context.strokeStyle = '#06FD04';
-        context.lineWidth = 3;
-        context.fillStyle = '#06FD04';
-        context.font = '21px Sans-serif';
-
-        var remaining_time = round*600 + 3000;
-        var total_time = remaining_time;
-
-        function show_time()
-        {
-            context.clearRect(0,0,timer.width,timer.height);
-            context.beginPath();
-            context.arc(32,32,30,-90,-90 + 2*(remaining_time/total_time)*Math.PI,false);
-            context.stroke();             
-            context.fillText(Math.floor(remaining_time/1000),27,40);
-        }
         
-        show_time();
+        let tiles = grid.querySelectorAll('.tile');
+        for(e of tiles)
+        {
+            let tile = e; 
+            tile.addEventListener('click',(event) => {
+                 let id = parseInt(tile.id.substr(4));
+                 console.log(id);
+                 clicked_tiles.push(id);
+                 clicked_tiles_num++;
+             })
+        }
+
         //for hightlighting tiles 
         for(let pos = 1;pos <= round;pos++)
         {       
@@ -299,46 +319,60 @@ async function start()
             tile.style.backgroundColor = 'yellow';
             tile.style.opacity = '1';
             
-            for(let i = 1;i <= 6;i++){
-                await sleep(100);
-                remaining_time = remaining_time - (100);
+            let tile_clicked = false;
+            tile.addEventListener('click',(event) => {
+                tile_clicked = true;
+            })
+            for(let i = 1;i <= 18;i++)
+            {
+                if(tile_clicked)
+                {
+                    tile.style = prev_style;
+                    break;
+                }
+                await sleep(50);
+                time += 50;
                 show_time();
-            }    
+            }
             tile.style = prev_style;
         }
 
-        //checking the status of the round
-        async function user_response()
-        {
-            
-            while(remaining_time)
+        //check status of the game and wait for user response
+        async function wait_for_clicks(){
+            while(clicked_tiles_num < round)
             {
                 await sleep(100);
-                remaining_time = remaining_time - 100;
+                time += 100;
                 show_time();
             }
 
-            show_time();
+            console.log(clicked_tiles);
+            console.log(tiles_pos);
 
-            //check the status of the game
-
-            console.log('round',round,": ",clicked_tiles);
-
-            for(let pos = 1;pos <= round;pos++)
+            if(clicked_tiles_num > round)
             {
-                if(clicked_tiles[pos-1] != (tiles_pos[pos]))
-                {
-                    return Promise.resolve("false");
-                }
+                return Promise.resolve("false");
             }
+            else
+            {
+                for(let pos = 1;pos <= round;pos++)
+                {
+                   if(clicked_tiles[pos-1] != (tiles_pos[pos]))
+                   {
+                      return Promise.resolve("false");
+                   }
+                }
 
-            return Promise.resolve("true");
+               return Promise.resolve("true");
+            }
+            
         }
 
-        const result = await user_response();  
-        status_bar.removeChild(timer);  
+        const result = await wait_for_clicks();      
         return result;
     }
+
+    status_bar.appendChild(stopwatch);
 
     let round = 1;
     for(;round <= 36;round++)
@@ -354,6 +388,7 @@ async function start()
         {
            //next round
            score += round; 
+           await sleep(1000);
         }
         else
         {
@@ -387,6 +422,10 @@ async function start()
     const popups_score = document.createElement('li');
     popups_score.innerText = 'Score:'+score;
     end_popups.querySelector('.popups_content').appendChild(popups_score);
+
+    const popups_time = document.createElement('li');
+    popups_time.innerText = 'Time:'+time;
+    end_popups.querySelector('.popups_content').appendChild(popups_time);
     
     document.body.appendChild(end_popups);
     end_popups.classList.add('active_popups');
@@ -414,6 +453,8 @@ async function start()
     };
     await end_popup_close_user_response();
   
+    status_bar.removeChild(stopwatch);
+
     document.body.removeChild(end_popups);
 
     //getting ready for next game
@@ -422,19 +463,32 @@ async function start()
     status_bar.appendChild(start_botton);
     status_bar.appendChild(show_leaderboard_button);
 
-    //store the score
+    //store the score and time
     if(localStorage.getItem(user_name))
     {
-        if(score > localStorage.getItem(user_name))
+        data = JSON.parse(localStorage.getItem(user_name));
+        if(score > data.score)
         {
-            localStorage.setItem(user_name,score);   
+            data.score = score;
+            data.time = time;
+            localStorage.setItem(user_name,JSON.stringify(data));
+        }
+        else if(score == data.score)
+        {
+            if(data.time > time)
+            {
+                data.time = time;
+               localStorage.setItem(user_name,JSON.stringify(data));
+            }
         }
     }
     else
     {
-        localStorage.setItem(user_name,score);
+        localStorage.setItem(user_name,JSON.stringify({
+            'score':score,
+            'time':time
+        }));
     }
-
     
     return;
 };

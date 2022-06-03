@@ -104,7 +104,7 @@ body{
     width: 80vw;
             
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
     row-gap: 2px;
 }
 .leaderboard-inactive{
@@ -171,7 +171,7 @@ body{
     backdrop-filter: blur(10px);
 }
 #leader_board .leaderboard-title{
-    grid-column: span 2;
+    grid-column: span 3;
     background-color: rgb(244, 219, 223);
 }
 .popups{
@@ -259,6 +259,34 @@ body{
 }
 #end_game .popups_content li{
     display: inline-block;
+}
+#count-down{
+    height:120px;
+    width:120px;
+    border:6px solid rgb(52, 243, 4);
+    border-style: double;
+    border-radius: 50%;
+    color:rgb(16, 96, 8);    
+    
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+#count-down > *{
+    height:30px;
+    width: 50px;
+    color:rgb(16, 96, 8);    
+    border: 2px solid rgb(16, 96, 8);
+    display: flex;
+}
+#count-down span span{
+    box-sizing: border-box;
+    height:30px;
+    width:25px;
+    padding-top: 5px;
+    text-align: center;
+    background-color: rgb(255, 255, 255);
+    margin: 0;
 }
 @media screen and (max-width : 1024) {
     body{
