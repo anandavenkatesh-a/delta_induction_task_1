@@ -12,11 +12,13 @@
     <script src="https://kit.fontawesome.com/62ef345795.js" crossorigin="anonymous"></script>
 </head>
 <body>
-    <canvas id = "count_down" height = "72px" width = "72px"></canvas>
+    <!-- <canvas id = "count_down" height = "72px" width = "72px"></canvas> -->
     <div class = "popups" id = "start_game">
         <div class = "popups_content">
-          <span>Play as</span>    
-          <input type = "text" name = "user_name" placeholder="Empty name not allowed">
+          <span>Play1</span>    
+          <input type = "text" id = "user_name1" placeholder="Empty name not allowed">
+          <span>Play2</span>
+          <input type="text" id = "user_name2" placeholder = "Empty name not allowed">
           <button> START>>> </button>
         </div>  
     </div>
@@ -32,8 +34,14 @@
             
         </ul>
     </div>
-    <div class = "popups" id = "lose_game"></div>
-    <div class = "popups" id = "win_game"></div>
+   <div id = "conduct-popup" class = "popups">
+      <div class = "close_popups">
+        <button>
+            <i class="fa-regular fa-circle-xmark"></i>
+        </button>
+      </div>
+      <p class = "popups-message"></p>
+   </div>
     <header>
         <h1 id = "game_title"><img src="./res/title.png"></h1>
 
@@ -48,12 +56,10 @@
     <main id = "container">
        
     </main>
-    
-    <div id = "leader_board">
-      
-    </div>
 
-    <i id ="show-leaderboard" class="fa-solid fa-trophy"></i>
+    <div id = "proceed">
+       
+    </div>
     <script src = "./script.js"></script>
 </body>
 </html>

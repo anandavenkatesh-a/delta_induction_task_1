@@ -2,36 +2,23 @@
 
 //including elements that are required
 const start_botton = document.querySelector("#start_button");
-const grid = document.querySelector('#container');
+const grid = document.body.querySelector('#container');
 const round_display = document.querySelector('#round');
 const score_display = document.querySelector('#score');
 const status_bar = document.querySelector('#game_status');
 const completion_status = document.querySelector('#completion_status');
 const start_popups = document.querySelector('#start_game');
 const end_popups = document.querySelector('#end_game');
-const leader_board = document.querySelector('#leader_board');
-const show_leaderboard_button = document.querySelector('#show-leaderboard');
+const conduct_popup = document.querySelector('#conduct-popup');
+const proceed_section = document.body.querySelector('#proceed');
 status_bar.removeChild(round_display);
 status_bar.removeChild(score_display);
 status_bar.removeChild(completion_status);
 document.body.removeChild(start_popups);
 document.body.removeChild(end_popups);
-document.body.removeChild(leader_board);
-document.body.removeChild(grid);
-document.body.removeChild(show_leaderboard_button);
-status_bar.appendChild(show_leaderboard_button);
 const vw = window.innerWidth;
 const vh = window.innerHeight;
-const timer = document.getElementById('count_down');
-const context = timer.getContext('2d');
-document.body.removeChild(timer);
 var first = true;
-
-//info related to tiles
-var tiles_seq = []; //tile_sq[tile] = pos
-var tiles_pos = []; //tiles_pos[pos] = tile
-
-
 
 //sleep functionality 
 function sleep(ms) 
@@ -90,122 +77,60 @@ async function createTile(i)
          
          return tile;
 }
-function show_leaderboard()
-{
-    leader_board.innerHTML = '';
-    document.body.appendChild(leader_board);
-    let leaderboard_title = document.createElement('div');
-    leaderboard_title.classList.add('leaderboard-title');
-    leader_board.appendChild(leaderboard_title);
-    leaderboard_title.innerHTML = '<span> LeaderBorad </span> <span> <i class="fa-solid fa-trophy"></i> </span>';
-    let leaderboard_data = Object.entries(localStorage).sort((p1,p2) => {
-        return p2[1] - p1[1];
-    });
-    for([pname,hscore] of leaderboard_data)
-    {
-        let player_name = document.createElement('div');
-        player_name.classList.add('player-name-container');
-        let player_hscore =document.createElement('div');
-        player_hscore.classList.add('player-hscore-container');
+async function start(){
+    var users = new Array();
+    var times = new Array();
+    var tiles_pos = [];
 
-        leader_board.appendChild(player_name);
-        leader_board.appendChild(player_hscore);
-        
-        player_name.innerHTML = `<span> ${pname} </span>`;
-        player_hscore.innerHTML = `<span> ${hscore} </span>`;
-    }
-    leader_board.style.gridTemplateRows = `repeat(${localStorage.length+1},40px)`;
-    
-    leader_board_spans = leader_board.querySelectorAll('div span');
-    for(span of leader_board_spans)
-    {
-        span.classList.add('leaderboard-inactive');
-        span.classList.add('leaderboard-active');
-    }
-}
-show_leaderboard_button.addEventListener('click',(event) => {
-    show_leaderboard();
-});
-async function start()
-{
-    //username
-    let user_name;
-    
-    //initialize the page for new game
-    status_bar.removeChild(show_leaderboard_button);
-    try{
-      document.body.removeChild(leader_board);
-    }
-    catch{}  
-    document.body.appendChild(grid); 
-
-    var score = 0;
-    
-    tiles_seq = [];
-    tiles_pos = [];
-    
     status_bar.removeChild(start_botton);
-    try{
-       status_bar.removeChild(completion_status);
-    }
-    catch{}
-
-    grid.innerHTML = "";
-    round_display.innerText = "1";
-    completion_status.querySelector('span').style.width = 0 + '%'; 
-    completion_status.querySelector('span').innerText = 0 + '%';
-    
-    //start audio
+    document.body.appendChild(grid);
+    grid.innerHTML = '';
+    //start_music
     start_audio.play();
-    
+
+    //get user1 and user2
     document.body.appendChild(start_popups);
-    start_popups.classList.add('active_popups');
+    start_popups.classList.add('active_popups');  
+    
 
-    //waiting till user resonse
-    start_popups_button = start_popups.querySelector('.popups_content button');
-    start_popups_content = start_popups.querySelector('.popups_content input');
-
-    // console.log(start_popups_close);
-    async function start_popup_user_response(){
-        var user_responded = false;
-        start_popups_button.addEventListener('click',(event) => {
-            if(start_popups_content.value != '')
+    async function user_response(){
+        let button_clicked = false;
+        start_popups.querySelector('button').addEventListener('click',(event) => {
+            users[1] = start_popups.querySelector('#user_name1').value;
+            users[2] = start_popups.querySelector('#user_name2').value;
+            if(users[1] != '' && users[2] != '')
             {
-                user_name = start_popups_content.value;
-                user_responded = true;
+               button_clicked = true;
             }
-        }); 
-        
-        while(!user_responded)
+        });
+
+        while(!button_clicked)
         {
             await sleep(100);
         }
 
         start_audio.pause();
         start_audio.currentTime = 0;
-        start_popups.classList.remove('active_popups');        
+        start_popups.classList.remove('active_popups');
+        document.body.removeChild(start_popups);
+
         return 'done';
-    };
-    await start_popup_user_response();
-    
-    document.body.removeChild(start_popups);
-
-    //showing round display and completion status of the game
-    status_bar.appendChild(round_display);
-    status_bar.appendChild(completion_status);
-
-    //create tiles container in grid
-    for(let id = 1;id <= 36;id++)
-    {
-        let tile_container = document.createElement('div');
-        tile_container.classList.add('tile_container');
-        tile_container.setAttribute('id','tile_container'+id);
-        grid.appendChild(tile_container);
     }
 
-    await sleep(1000);
+    await user_response();
 
-    //fill tiles in tiles container with animation
+    //show tiles
+
+     //create tiles container in grid
+     for(let id = 1;id <= 36;id++)
+     {
+         let tile_container = document.createElement('div');
+         tile_container.classList.add('tile_container');
+         tile_container.setAttribute('id','tile_container'+id);
+         grid.appendChild(tile_container);
+     }
+
+    //fill tiles with aniamtion 
     for(let tile_id = 1;tile_id <= 36;tile_id++)
     {
          let tile = await createTile(1+ Math.floor(Math.random()*4));  
@@ -229,233 +154,316 @@ async function start()
         tile_fall.currentTime = 0;
         await sleep(100);
     }
-   
-    await sleep(1000);
-    
-    //counduct rounds 
-    async function conduct_round(round)
-    {        
-        
-        tiles_seq = [];
-        tiles_pos = [];
-        
-        //choose random tiles
-        let length = 36;
-        
-        var pos_alloted_tiles = 0;
-        while(pos_alloted_tiles < round)
-        {
-            let tile_index = Math.floor(Math.random()*length);
-            if(tiles_seq[tile_index] == undefined)
-            {
-                tiles_seq[tile_index] = pos_alloted_tiles+1;
-                pos_alloted_tiles++;
-            }
-        } 
 
-        for(let pos = 1;pos <= round;pos++)
-        {
-            for(let index = 0;index < 36;index++)
-            {
-                if(tiles_seq[index] == pos)
-                {
-                    tiles_pos[pos] = index+1;
-                    break;
-                }
-            }
-        }
-        
-        console.log('round',round,": ",tiles_pos);
-        //managing user clicks
-        let clicked_tiles = [];
-        let clicked_tiles_num = 0;
-        grid.addEventListener('click',(event) => {
-            let target = event.target;
-            if(clicked_tiles_num < round)
-            {
-                if(target.classList.contains('tile'))
-                {
-                    let tile_id = parseInt(target.id.substring(4));
-                    clicked_tiles.push(tile_id); 
-                    clicked_tiles_num++;
-                
-                }
-                else if(target.classList.contains('tile_icon'))
-                {
-                    let tile_id = parseInt(target.parentNode.parentNode.id.substring(4));
-                    clicked_tiles.push(tile_id);
-                    clicked_tiles_num++;
-                }
-            }
-        });
+    sleep(1000);
 
-        status_bar.appendChild(timer);
-        context.strokeStyle = '#06FD04';
-        context.lineWidth = 3;
-        context.fillStyle = '#06FD04';
-        context.font = '21px Sans-serif';
-
-        var remaining_time = round*600 + 3000;
-        var total_time = remaining_time;
-
-        function show_time()
-        {
-            context.clearRect(0,0,timer.width,timer.height);
-            context.beginPath();
-            context.arc(32,32,30,-90,-90 + 2*(remaining_time/total_time)*Math.PI,false);
-            context.stroke();             
-            context.fillText(Math.floor(remaining_time/1000),27,40);
-        }
-        
-        show_time();
-        //for hightlighting tiles 
-        for(let pos = 1;pos <= round;pos++)
-        {       
-            let tile = document.querySelector('#tile' + tiles_pos[pos]);
-            let prev_style = tile.style;
-            tile.style.backgroundColor = 'yellow';
-            tile.style.opacity = '1';
-            
-            for(let i = 1;i <= 6;i++){
-                await sleep(100);
-                remaining_time = remaining_time - (100);
-                show_time();
-            }    
-            tile.style = prev_style;
-        }
-
-        //checking the status of the round
-        async function user_response()
-        {
-            
-            while(remaining_time)
-            {
-                await sleep(100);
-                remaining_time = remaining_time - 100;
-                show_time();
-            }
-
-            show_time();
-
-            //check the status of the game
-
-            console.log('round',round,": ",clicked_tiles);
-
-            for(let pos = 1;pos <= round;pos++)
-            {
-                if(clicked_tiles[pos-1] != (tiles_pos[pos]))
-                {
-                    return Promise.resolve("false");
-                }
-            }
-
-            return Promise.resolve("true");
-        }
-
-        const result = await user_response();  
-        status_bar.removeChild(timer);  
-        return result;
-    }
-
-    let round = 1;
-    for(;round <= 36;round++)
+    async function set(playerNum)
     {
-        round_display.innerText = ""+round;
-        completion_status.querySelector('span').style.width = ((round-1)/36)*100 + '%'; 
-        completion_status.querySelector('span').innerText = Math.floor(((round-1)/36)*100) + '%';
-        let result = await conduct_round(round);
-
-        let won = result;
-        var win = true;
-        if(won == "true")
+        //show popup
+        document.body.appendChild(conduct_popup);
+        const popups_message = conduct_popup.querySelector('.popups-message');
+        var playerNum1;
+        if(playerNum == 1)
         {
-           //next round
-           score += round; 
+            playerNum1 = 2;
         }
         else
         {
-           //edn the round 
-           break;
+            playerNum1 = 1;
         }
-    }
-    
-    //removing tiles
-    grid.innerHTML = '';
-    status_bar.removeChild(completion_status);
-    status_bar.removeChild(round_display);
+        popups_message.innerHTML = `${users[playerNum]} Set pattern for ${users[playerNum1]}`;
+        conduct_popup.classList.add('active_popups');
+        
+        var popup_button = conduct_popup.querySelector('.close_popups button');
+        
+        async function user_response_closepopups(){
+            var responded = false;
+            popup_button.addEventListener('click',(event) => {
+                responded = true;  
+            });
 
-    //show end game popups and start music
+            while(!responded)
+            {
+                await sleep(100);
+            }
 
-    if(round == 37)
-    {
-        completion_status.querySelector('span').innerText = 100 + '%';
-        completion_status.querySelector('span').style.width = 100 + '%'; 
-        await sleep(100);
-        end_popups.querySelector('.popups_title').innerText = "You Won";
-    }
-    else
-    {
-        end_popups.querySelector('.popups_title').innerText = "You Lost";
-        const popups_round = document.createElement('li');
-        popups_round.innerText = 'Round:'+round;
-        end_popups.querySelector('.popups_content').appendChild(popups_round);
-    }
-    
-    const popups_score = document.createElement('li');
-    popups_score.innerText = 'Score:'+score;
-    end_popups.querySelector('.popups_content').appendChild(popups_score);
-    
-    document.body.appendChild(end_popups);
-    end_popups.classList.add('active_popups');
-    end_music.play();
-    
-    //waiting till user response
-    end_popups_close = end_popups.querySelector('button');
-    async function end_popup_close_user_response(){
-        var user_responded = false;
-        end_popups_close.addEventListener('click',(event) => {
-            user_responded = true;
-        });  
+            popups_message.innerHTML = '';
+            conduct_popup.classList.remove('active_popups');
+            document.body.removeChild(conduct_popup);
+            return 'done';
+        }
 
-        while(!user_responded)
+        await user_response_closepopups();
+      
+        //add req elements
+        let tiles = grid.querySelectorAll('.tile');
+        var tileNum = 1;
+
+        let mark_pos = (tile) => {
+            let tile_icon = tile.querySelector('img');
+                if(tile_icon.style.height != '0px')
+                {
+                    let id = parseInt(tile.id.substr(4));
+                    tiles_pos[tileNum] = id;
+                    
+                    
+                    tile_icon.style.height = '0px';
+                    tile_icon.style.width = '0px';
+   
+                    let pos = document.createElement('span');
+                    pos.innerText = `${tileNum}`;
+                    tile.appendChild(pos);
+   
+                    tileNum++;
+                }
+        };
+
+        for(e of tiles)
         {
-            await sleep(100);
+            let tile = e; 
+            tile.addEventListener('click',(event) =>{
+                mark_pos(tile);
+            });
         }
 
-        end_music.pause();
-        end_music.currentTime = 0;
-        end_popups.classList.remove('active_popups');
-        end_popups.querySelector('.popups_title').innerText = '';
-        end_popups.querySelector('.popups_content').innerHTML = '';
-        return 'done';
-    };
-    await end_popup_close_user_response();
-  
-    document.body.removeChild(end_popups);
+        const finish_set = document.createElement('button');
+        finish_set.innerText = 'Setted';
+        finish_set.setAttribute('id','finish-set');
+        proceed_section.appendChild(finish_set);
+        
+        async function user_response_finish_set()
+        {
+            let responded = false;
 
-    //getting ready for next game
+            finish_set.addEventListener('click',(event) => {
+                responded = true;       
+            });
+
+            while(!responded)
+            {
+                await sleep(100);
+            }
+
+            return 'done';
+        }
+        
+        await user_response_finish_set();
+        
+        console.log(tiles_pos);
+        //remove req elements
+        proceed_section.removeChild(finish_set);
+        for(let tilePos = 1;tilePos < tileNum;tilePos++)
+        {
+            let tile = document.body.querySelector('#tile'+tiles_pos[tilePos]);
+            let pos = tile.querySelector('span');    
+            tile.removeChild(pos);
+            let tile_icon = tile.querySelector('img');
+            tile_icon.style.height = '30px';
+            tile_icon.style.width = '30px'; 
+        }
+
+        mark_pos = (tile) => {};
+        console.log(tiles_pos);
+    }  
+    async function play(playerNum)
+    {
+        //show popup
+        document.body.appendChild(conduct_popup);
+        const popups_message = conduct_popup.querySelector('.popups-message');
+        var playerNum1;
+        if(playerNum == 1)
+        {
+            playerNum1 = 2;
+        }
+        else
+        {
+            playerNum1 = 1;
+        }
+        popups_message.innerHTML = `${users[playerNum]} Start Playing`;
+        conduct_popup.classList.add('active_popups');
+        
+        var popup_button = conduct_popup.querySelector('.close_popups button');
+        
+        async function user_response_closepopups(){
+            var responded = false;
+            popup_button.addEventListener('click',(event) => {
+                responded = true;  
+            });
+
+            while(!responded)
+            {
+                await sleep(100);
+            }
+
+            popups_message.innerHTML = '';
+            conduct_popup.classList.remove('active_popups');
+            document.body.removeChild(conduct_popup);
+            return 'done';
+        }
+
+        await user_response_closepopups();
+      
+        //render UI to user and collect the user response
+
+        async function conduct()
+        {        
+            
+            //managing user clicks
+            let clicked_tiles = [];
+            let clicked_tiles_num = 0;
+            
+            let selectTile = (tile) =>{
+                let id = parseInt(tile.id.substr(4));
+                console.log(id);
+                clicked_tiles.push(id);
+                clicked_tiles_num++;
+            };
+            let tiles = grid.querySelectorAll('.tile');
+            for(e of tiles)
+            {
+                let tile = e; 
+                tile.addEventListener('click',(event) => {
+                    selectTile(tile);
+                })
+            }
+
+            //for hightlighting tiles 
+            for(tileId of tiles_pos)
+            {       
+                if(tileId)
+                {
+                    let tile = document.body.querySelector('#tile' + tileId);
+                    let prev_style = tile.style;
+                    tile.style.backgroundColor = 'yellow';
+                    tile.style.opacity = '1';
+                    await sleep(600);
+                    tile.style = prev_style;
+                }
+            }
+
+            //check status of the game and wait for user response
+            async function wait_for_clicks(){
+                while(clicked_tiles_num < tiles_pos.length -1)
+                {
+                    await sleep(100);
+                }
+
+                console.log(clicked_tiles);
+                console.log(tiles_pos);
+
+                if(clicked_tiles_num >= tiles_pos.length)
+                {
+                    return Promise.resolve("false");
+                }
+                else
+                {
+                    for(let pos = 1;pos < tiles_pos.length;pos++)
+                    {
+                    if(clicked_tiles[pos-1] != (tiles_pos[pos]))
+                    {
+                        return Promise.resolve("false");
+                    }
+                    }
+
+                return Promise.resolve("true");
+                }
+                
+            }
+
+            const result = await wait_for_clicks();  
+            selectTile = (tile) => {};    
+            return result;
+        }
+
+        let result = await conduct();
+ 
+        if(result == 'false')
+        {
+             end_music.play();
+             document.body.appendChild(conduct_popup);
+             let popups_message = conduct_popup.querySelector('.popups-message');
+
+             popups_message.innerHTML = `${users[playerNum1]} Won`;
+             conduct_popup.classList.add('active_popups');
+        
+             let popup_button = conduct_popup.querySelector('.close_popups button');
+        
+             async function user_response_endgame(){
+                  var responded = false;
+                  popup_button.addEventListener('click',(event) => {
+                    responded = true;  
+                  });
+
+                  while(!responded)
+                  {
+                   await sleep(100);
+                  }
+
+                  end_music.pause();
+                  end_music.currentTime = 0;
+                  popups_message.innerHTML = '';
+                  conduct_popup.classList.remove('active_popups');
+                  document.body.removeChild(conduct_popup);
+                  return 'done';
+            }
+
+           await user_response_endgame();
+        }
+
+        return result;
+    }
+
+    var game_ended = false;
+    var game_status = 0;
+    //game_status = 0 => p1 is setting
+    //game_status = 1 => p1 is playing
+    //game_status = 2 => p2 is setting
+    //game_status = 3 => p2 is playing
+
+    while(!game_ended)
+    {
+            if(game_status == 0){
+                tiles_pos = [];
+                await set(1);
+            }        
+            else if(game_status == 1)
+            {
+                const result = await play(1);
+                if(result == 'false')
+                {
+                    game_ended = true;
+                }   
+            }                
+            else if(game_status == 2)
+            {
+                tiles_pos = [];
+                await set(2);
+            }                
+            else 
+            {
+                const result = await play(2);
+                if(result == 'false')
+                {
+                    game_ended = true;
+                }
+            }
+                
+
+        if(game_status)
+        {
+            game_status = game_status -1;
+        }
+        else
+        {
+            game_status = 3;
+        }
+    }
+
+    //ready for next game
     document.body.removeChild(grid);
     start_botton.innerHTML = '<i class="fa-solid fa-arrow-rotate-right"></i>'; 
     status_bar.appendChild(start_botton);
-    status_bar.appendChild(show_leaderboard_button);
-
-    //store the score
-    if(localStorage.getItem(user_name))
-    {
-        if(score > localStorage.getItem(user_name))
-        {
-            localStorage.setItem(user_name,score);   
-        }
-    }
-    else
-    {
-        localStorage.setItem(user_name,score);
-    }
-
-    
-    return;
-};
-
+}
 start_botton.addEventListener('click',(event) => {
     start();
 });
