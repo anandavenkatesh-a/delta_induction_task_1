@@ -236,7 +236,10 @@ async function start(){
             let responded = false;
 
             finish_set.addEventListener('click',(event) => {
-                responded = true;       
+                if(tiles_pos.length > 1)
+                {
+                   responded = true;       
+                }
             });
 
             while(!responded)
@@ -309,14 +312,25 @@ async function start(){
         {        
             
             //managing user clicks
-            let clicked_tiles = [];
             let clicked_tiles_num = 0;
-            
+            var game_over = false;
             let selectTile = (tile) =>{
                 let id = parseInt(tile.id.substr(4));
-                console.log(id);
-                clicked_tiles.push(id);
-                clicked_tiles_num++;
+                 if(tiles_pos[clicked_tiles_num+1] != id)
+                 {
+                    game_over = true;
+                    return;
+                 }
+                 else
+                 {
+                     clicked_tiles_num++;
+                 }
+
+                 if(clicked_tiles_num == tiles_pos.length-1)
+                 {
+                     game_over = true;
+                     return;
+                 }
             };
             let tiles = grid.querySelectorAll('.tile');
             for(e of tiles)
@@ -336,38 +350,39 @@ async function start(){
                     let prev_style = tile.style;
                     tile.style.backgroundColor = 'yellow';
                     tile.style.opacity = '1';
-                    await sleep(600);
+                    
+                    let tile_clicked = false;
+                    tile.addEventListener('click',(event) => {
+                        tile_clicked = true;
+                    })
+                    for(let i = 1;i <= 18;i++)
+                    {
+                        if(tile_clicked||game_over)
+                        {
+                            tile.style = prev_style;
+                            break;
+                        }
+                        await sleep(50);
+                    }
                     tile.style = prev_style;
                 }
             }
 
             //check status of the game and wait for user response
             async function wait_for_clicks(){
-                while(clicked_tiles_num < tiles_pos.length -1)
+                while(!game_over)
                 {
-                    await sleep(100);
+                    await sleep(50);
                 }
 
-                console.log(clicked_tiles);
-                console.log(tiles_pos);
-
-                if(clicked_tiles_num >= tiles_pos.length)
+                if(clicked_tiles_num == tiles_pos.length-1)
                 {
-                    return Promise.resolve("false");
+                   return 'true';
                 }
                 else
                 {
-                    for(let pos = 1;pos < tiles_pos.length;pos++)
-                    {
-                    if(clicked_tiles[pos-1] != (tiles_pos[pos]))
-                    {
-                        return Promise.resolve("false");
-                    }
-                    }
-
-                return Promise.resolve("true");
+                   return 'false';
                 }
-                
             }
 
             const result = await wait_for_clicks();  

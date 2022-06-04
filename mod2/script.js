@@ -295,8 +295,8 @@ async function start()
             }
         }
         
+        var game_over = false;
         //managing user clicks
-        let clicked_tiles = [];
         let clicked_tiles_num = 0;
         
         let tiles = grid.querySelectorAll('.tile');
@@ -305,14 +305,27 @@ async function start()
             let tile = e; 
             tile.addEventListener('click',(event) => {
                  let id = parseInt(tile.id.substr(4));
-                 console.log(id);
-                 clicked_tiles.push(id);
-                 clicked_tiles_num++;
+                 if(tiles_pos[clicked_tiles_num+1] != id)
+                 {
+                    game_over = true;
+                    return;
+                 }
+                 else
+                 {
+                     clicked_tiles_num++;
+                 }
+
+                 if(clicked_tiles_num == round)
+                 {
+                     game_over = true;
+                     return;
+                 }
+
              })
         }
 
         //for hightlighting tiles 
-        for(let pos = 1;pos <= round;pos++)
+        for(let pos = 1;(pos <= round)&&(!game_over);pos++)
         {       
             let tile = document.querySelector('#tile' + tiles_pos[pos]);
             let prev_style = tile.style;
@@ -325,7 +338,7 @@ async function start()
             })
             for(let i = 1;i <= 18;i++)
             {
-                if(tile_clicked)
+                if(tile_clicked||game_over)
                 {
                     tile.style = prev_style;
                     break;
@@ -339,33 +352,21 @@ async function start()
 
         //check status of the game and wait for user response
         async function wait_for_clicks(){
-            while(clicked_tiles_num < round)
+            while(!game_over)
             {
-                await sleep(100);
-                time += 100;
+                await sleep(50);
+                time += 50;
                 show_time();
             }
 
-            console.log(clicked_tiles);
-            console.log(tiles_pos);
-
-            if(clicked_tiles_num > round)
+            if(clicked_tiles_num == round)
             {
-                return Promise.resolve("false");
+                return 'true';
             }
             else
             {
-                for(let pos = 1;pos <= round;pos++)
-                {
-                   if(clicked_tiles[pos-1] != (tiles_pos[pos]))
-                   {
-                      return Promise.resolve("false");
-                   }
-                }
-
-               return Promise.resolve("true");
+                return 'false';
             }
-            
         }
 
         const result = await wait_for_clicks();      
