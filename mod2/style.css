@@ -9,24 +9,25 @@ body{
     min-height: 100vh;
     height: fit-content;
     width: 100vw;
-    overflow: scroll;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
-#game_title{
-    box-sizing: border-box;
-    width: 100%;
-    height: 120px;
-    text-align: center;
-    background-image: linear-gradient(35deg,rgb(137, 204, 200),rgb(223, 156, 220),rgb(137, 201, 137),rgb(122, 122, 206));
-    color:white;
-    margin-top: 0;
-    margin-bottom: 20px;
+header h1{
+    height:100px;
+    width:80vw;
+    margin-left: 10vw;
+    background-image: linear-gradient(to right top,rgb(137, 204, 200),rgb(223, 156, 220),rgb(137, 201, 137),rgb(122, 122, 206));
+    border: 0px solid white;
+    border-radius: 2rem;
+
     display: flex;
     justify-content: center;
     align-items: center;
-}
-#game_title img{
-    height: 90%;
-    width: 390px;
+
+    font-size: 2.1rem;
+    font-weight: 900;
+    font-family: 'Dancing Script', cursive;
+    color:rgb(253, 3, 253);
 }
 #game_status{
     width: 100%;
@@ -190,11 +191,10 @@ body{
 }
 .active_popups{
     transition:all 900ms;
-    height: 30vh;
+    height: fit-content;
     width: 60vw;
     top:40vh;
     left:20vw;
-    overflow-y: scroll;
 }
 #start_game{
     display: flex;
