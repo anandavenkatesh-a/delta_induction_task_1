@@ -307,91 +307,88 @@ async function start(){
         await user_response_closepopups();
       
         //render UI to user and collect the user response
+        
+        let result;
+        async function conduct_rounds()
+        {
+            var clicked_tiles_num;  //succesfully clicked tiles
+            var round_losed = false;
 
-        async function conduct()
-        {        
-            
-            //managing user clicks
-            let clicked_tiles_num = 0;
-            var game_over = false;
-            let selectTile = (tile) =>{
-                let id = parseInt(tile.id.substr(4));
-                 if(tiles_pos[clicked_tiles_num+1] != id)
-                 {
-                    game_over = true;
-                    return;
-                 }
-                 else
-                 {
-                     clicked_tiles_num++;
-                 }
-
-                 if(clicked_tiles_num == tiles_pos.length-1)
-                 {
-                     game_over = true;
-                     return;
-                 }
-            };
             let tiles = grid.querySelectorAll('.tile');
-            for(e of tiles)
+
+            for(tile of tiles)
             {
-                let tile = e; 
-                tile.addEventListener('click',(event) => {
-                    selectTile(tile);
-                })
+                let e = tile;
+                tile.addEventListener('click',(event) =>{
+                    var id = parseInt(e.id.substr(4));
+                    if(id == tiles_pos[clicked_tiles_num+1])
+                    {
+                        clicked_tiles_num++;
+                    }
+                    else
+                    {
+                        round_losed = true;
+                    }
+                });
             }
 
-            //for hightlighting tiles 
-            for(tileId of tiles_pos)
-            {       
-                if(tileId)
+            async function conduct_round(round){
+                //once round is over this function stops executing
+                //after that the status of the round can be found by round_losed variable
+                clicked_tiles_num = 0;
+                
+                
+                for(tile_pos = 1;tile_pos <= round;tile_pos++)
                 {
-                    let tile = document.body.querySelector('#tile' + tileId);
+                    //highlight
+                    let tile = document.querySelector('#tile' + tiles_pos[tile_pos]);
                     let prev_style = tile.style;
                     tile.style.backgroundColor = 'yellow';
                     tile.style.opacity = '1';
+                    //wait and meanwhile check round status
                     
-                    let tile_clicked = false;
-                    tile.addEventListener('click',(event) => {
-                        tile_clicked = true;
-                    })
-                    for(let i = 1;i <= 18;i++)
+                    for(let t = 1;t <= 18;t++)
                     {
-                        if(tile_clicked||game_over)
+                        if(clicked_tiles_num == round || round_losed)
                         {
-                            tile.style = prev_style;
-                            break;
+                          tile.style = prev_style;
+                          return;
                         }
                         await sleep(50);
                     }
-                    tile.style = prev_style;
-                }
-            }
 
-            //check status of the game and wait for user response
-            async function wait_for_clicks(){
-                while(!game_over)
+                    //remove highlight
+                    tile.style = prev_style;
+
+                }
+
+                while(true)
                 {
+
+                    if(clicked_tiles_num == round || round_losed)
+                    {
+                       return;
+                    }
                     await sleep(50);
                 }
 
-                if(clicked_tiles_num == tiles_pos.length-1)
+            }
+            
+            var round;
+            for(round = 1;round < tiles_pos.length;round++){
+                await conduct_round(round);
+                if(round_losed)
                 {
-                   return 'true';
+                    return 'false';
                 }
-                else
-                {
-                   return 'false';
-                }
+                await sleep(1000);
             }
 
-            const result = await wait_for_clicks();  
-            selectTile = (tile) => {};    
-            return result;
+            return 'true';
         }
 
-        let result = await conduct();
- 
+        result = await conduct_rounds();
+
         if(result == 'false')
         {
              end_music.play();
